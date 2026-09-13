@@ -1,0 +1,4 @@
+var IMAGE_URL = 'http://www.tianfucd.com';
+module.exports = {
+  IMAGE_URL: IMAGE_URL
+};

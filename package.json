@@ -1,0 +1,22 @@
+{
+    "id": "u-steps-com",
+    "name": "u-steps-com 步骤条",
+    "displayName": "u-steps-com 步骤条",
+    "version": "1.0.4",
+    "description": "uni-app 步骤条组件，配合右侧显示内容u-view-com组件一起使用 支持自定义icon，自定义图标背景色，自定义步骤条颜色(支持渐变)",
+    "keywords": [
+        "step",
+        "steps",
+        "步骤条",
+        "步骤组件"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    },
+    "dependencies": {
+        "dayjs": "^1.11.21"
+    }
+}

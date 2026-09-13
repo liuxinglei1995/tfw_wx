@@ -1,0 +1,97 @@
+@font-face {
+	  font-family: "iconfont"; /* Project id 2763555 */
+	  src: url('/pagesHouse/static/iconfont/iconfont.ttf');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-canting:before {
+  content: "\e6d4";
+}
+
+.icon-qita:before {
+  content: "\e62b";
+}
+
+.icon-dianyingyuan:before {
+  content: "\e602";
+}
+
+.icon-tiyuguan:before {
+  content: "\e618";
+}
+
+.icon-kafeiguan:before {
+  content: "\e63e";
+}
+
+.icon-ATMMachine:before {
+  content: "\ea70";
+}
+
+.icon-jianshenfang:before {
+  content: "\e610";
+}
+
+.icon-gongyuan:before {
+  content: "\e69f";
+}
+
+.icon-021-bank:before {
+  content: "\e6b4";
+}
+
+.icon-shichang:before {
+  content: "\e674";
+}
+
+.icon-xiaoxue-copy:before {
+  content: "\e61e";
+}
+
+.icon-shangchang:before {
+  content: "\e687";
+}
+
+.icon-yaofang:before {
+  content: "\e693";
+}
+
+.icon-youeryuanguanli:before {
+  content: "\e60e";
+}
+
+.icon-yiyuan:before {
+  content: "\e859";
+}
+
+.icon-daxue:before {
+  content: "\e67a";
+}
+
+.icon-chaoshi:before {
+  content: "\e60f";
+}
+
+.icon-middle_schooll_icon:before {
+  content: "\e61c";
+}
+
+.icon-Transportation-13:before {
+  content: "\e7d9";
+}
+
+.icon-daohang:before {
+  content: "\e797";
+}
+
+.icon-ditie:before {
+  content: "\e60d";
+}
+

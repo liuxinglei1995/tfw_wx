@@ -1,0 +1,641 @@
+{
+	"easycom": {
+		"autoscan": true
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/taxes/taxes",
+			"style": {
+				"navigationBarTitleText": "税费计算",
+				"navigationStyle": "custom"
+			}
+		},
+		// {
+		// 	"path": "pages/news/news",
+		// 	"style": {
+		// 		"navigationBarTitleText": "天府事",
+		// 		"navigationStyle": "custom"
+		// 	}
+
+		// },
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/message/message",
+			"style": {
+				"navigationBarTitleText": "消息"
+			}
+		},
+		{
+			"path" : "pages/moreSharing/moreSharing",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		}
+
+		// {
+		// 	"path": "pages/dkfw/dkfw",
+		// 	"style": {
+		// 		"navigationStyle": "custom",
+		// 		"navigationBarTitleText": "贷款沟通服务"
+		// 	}
+		// }
+	],
+	"subPackages": [{
+			"root": "pagesHouse",
+			"pages": [{
+					"path": "chat/chat",
+					"style": {
+						"navigationBarTitleText": "在线咨询",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "eshouse/test/test",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "houseid/follow_up",
+					"style": {
+						"navigationBarTitleText": "房源跟踪",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "houseid/houseid",
+					"style": {
+						"navigationBarTitleText": "房屋详情",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "houseid/makePhoneCall",
+					"style": {
+						"navigationBarTitleText": "快捷拨打电话",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "priceLog/priceLog",
+					"style": {
+						"navigationBarTitleText": "调价记录",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "houseid/watchVideo",
+					"style": {
+						"navigationBarTitleText": "看视频",
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "newhouse/newhouse",
+					"style": {
+						"navigationStyle": "custom"
+					}
+
+				},
+				{
+					"path": "rentHouse/rentHouse",
+					"style": {
+						"navigationStyle": "custom"
+					}
+
+				},
+				{
+					"path": "eshouse/business",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "map/map",
+					"style": {
+						"navigationStyle": "custom"
+					}
+
+				},
+				{
+					"path": "esMap/esMap",
+					"style": {
+						"navigationStyle": "custom"
+					}
+
+				},
+
+				{
+					"path": "eshouse/eshouse",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "eshouse/companyHouse",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "houseid/community_detailss",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "houseid/editHouseId",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path" : "manyHouseShare/index",
+					"style" : 
+					{
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pagesTools",
+			"pages": [{
+					"path": "pages/calculator/taxes/taxes",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/calculator/index/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/newHouseShare/newHouseShare",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/houseShare/houseShare",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/contract/contract",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path" : "pages/contract/ifrom",
+					"style" : 
+					{
+						"navigationBarTitleText" : "合同预览"
+					}
+				},
+				{
+					"path": "pages/contract/contractProcess",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/camera/watermark/watermark",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/camera/watermark/watermark2",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/goufangzige/goufangzige",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "onePages/pinggu",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/guidePrice/guidePrice",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/zhaopin/zhaopin",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "onePages/ershoufangdaiban",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/aboutUs",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/homeless",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/movehome",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/collaboration",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/taxaccounting",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/aboutUs/newhouse",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "onePages/tianfuxinyong",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/poster/poster",
+					"style": {
+						"navigationBarTitleText": "海报生成",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/calculator/all-pay/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/calculator/pay/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/calculator/taxes/result",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/xingn/cjshuju/cjshuju",
+					"style": {
+						"navigationBarTitleText": "天府网-成都房产数据",
+						"navigationBarBackgroundColor": "#3DA15B",
+						"navigationBarTextStyle": "white"
+					}
+				},
+				{
+					"path": "pages/xingn/publicyuyue/publicyuyue",
+					"style": {
+						"navigationBarTitleText": "预约看房",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/houseSearch/houseSearch",
+					"style": {
+						// "navigationBarTitleText": "搜索",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/mapAll/mapAll",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/daily/index",
+					"style": {
+						"navigationBarTitleText": "日报",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/daily/content/content",
+					"style": {
+						"navigationBarTitleText": "日报填写",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pagesSignIn",
+			"pages": [{
+					"path": "pages/signIn/signIn",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/signIn/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/signIn/timeRecord",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/signIn/set",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pagesUser",
+			"pages": [{
+					"path": "task/task",
+					"style": {
+						"navigationBarTitleText": "代办任务",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "task/examineAndApprove/examineAndApprove",
+					"style": {
+						"navigationBarTitleText": "审批",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "standby/standby",
+					"style": {
+						"navigationBarTitleText": "备用房源",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "standby/standbyid",
+					"style": {
+						"navigationBarTitleText": "备用房源",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "login/login",
+					"style": {
+						"navigationBarTitleText": "登录",
+						"navigationStyle": "custom"
+
+					}
+				},
+				{
+					"path": "setting/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "shop/shop",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "shop/input/input",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "addlpxq/input",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "up/agent",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "customerMG/customerMG",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "customerMG/details/details",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "customerMG/adddetails/adddetails",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "customerMG/looklogid/looklogid",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "customerMG/looklogid/confirmbyid",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+
+				{
+					"path": "customerMG/addlook",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "shop/input/communitys",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "shop/input/secondHousing",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "publish/publish",
+					"style": {
+						"navigationBarTitleText": "委托中心",
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "publish/sell/sell",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "publish/buy/buy",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "publish/sell/detail/detail",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "drafts/drafts",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "collect/collect",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "subscribe/subscribe",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "publish/sell/detail/entrust/entrust",
+					"style": {
+						"navigationBarTitleText": "委托成功",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "browse/browse",
+					"style": {
+						"navigationBarTitleText": "用户浏览历史"
+					}
+				}
+			]
+		},
+		{
+			"root": "pagesEdu",
+			"pages": [
+				{
+					"path": "hits/hits",
+					"style": {
+						"navigationBarTitleText": "点击榜",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		}
+	],
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#00aaff",
+		"backgroundColor": "#ffffff",
+		"iconWidth": "35px",
+		"height": "60px",
+		"spacing": "2px",
+		"position": "bottom",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "/static/assets/tabbar/home.png",
+				"selectedIconPath": "/static/assets/tabbar/home_.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/taxes/taxes",
+				"iconPath": "/static/assets/tabbar/look.png",
+				"selectedIconPath": "/static/assets/tabbar/look_.png",
+				"text": "税费计算"
+			},
+			{
+				"pagePath": "pages/message/message",
+				"iconPath": "/static/assets/tabbar/msg.png",
+				"selectedIconPath": "/static/assets/tabbar/msg_.png",
+				"text": "消息"
+			},
+			// {
+			// 	"pagePath": "pages/news/news",
+			// 	"iconPath": "/static/assets/tabbar/look.png",
+			// 	"selectedIconPath": "/static/assets/tabbar/look_.png",
+			// 	"text": "须看"
+			// },
+			// {
+			// 	"pagePath": "pages/dkfw/dkfw",
+			// 	"iconPath": "/static/assets/tabbar/dkfw.png",
+			// 	"selectedIconPath": "/static/assets/tabbar/dkfw_.png",
+			// 	"text": "咨询服务"
+			// },
+			{
+				"pagePath": "pages/mine/mine",
+				"iconPath": "/static/assets/tabbar/my.png",
+				"selectedIconPath": "/static/assets/tabbar/my_.png",
+				"text": "我的"
+			}
+		]
+	},
+
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": []
+	},
+	"lazyCodeLoading": "requiredComponents"
+}

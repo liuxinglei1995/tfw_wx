@@ -1,0 +1,437 @@
+<template>
+	<view class="container">
+		<tm-menubars title="房贷计算结果" iconColor="white" ></tm-menubars>
+		
+		
+		<view class="container-page">
+			<view class="" style="padding: 45rpx 30rpx;">
+				<tm-tabs v-model="tabIndex" :list="tabs" range-key="name" @change="tabChange"></tm-tabs>
+				
+				<view class="container-body">
+					<view class="container-body-head">
+						当前计算结果使用利率:商贷基准利率{{(rate * 100).toFixed(3)}}%
+					</view>
+					<view class="container-body-title">
+						{{active ? '首期还款': '每月还款'}}
+					</view>
+					<view class="repayment-money">
+						<text class="text1">{{monthPay}}</text>
+						<text class="text2">元</text>
+						<text class="text3">共{{months}}期</text>
+					</view>
+					<view class="amount-tips">
+						{{lineOne}}
+					</view>
+					<view class="by-the-month" @tap="handler()" v-if="active">
+						查看每期还款明细
+					</view>
+					<view class="tabel">
+						<view class="tabel-one">
+							{{ringList[0].name}} {{ringList[0].value}}万
+						</view>
+						<view class="tabel-one">
+							{{ringList[1].name}} {{ringList[1].value}}万
+						</view>
+					</view>
+					<view class="tabel">
+						<view class="tabel-one">
+							支付利息 {{ringList[2].value}}万
+						</view>
+						<view class="tabel-one">
+							贷还款总额 {{(Number(ringList[2].value)+Number(ringList[1].value)).toFixed(2)}}万
+						</view>
+					</view>
+					<view class="bottom-tips">
+						注：此计算记过仅供参考,实际缴费应以当地为准
+					</view>
+				</view>
+				
+				<view class="">
+					<button type="default" class="buttom-class" @tap='recalculate()'>重新计算</button>
+				</view>
+				
+				<view class="">
+					<button type="default" class="buttom-class" @tap='share()'>分享</button>
+				</view>
+			</view>
+		</view>
+		<tm-poup v-model="showPoup" :height="800" :position="pos">
+			<view class="">
+				<view class="popup-body-head">
+					<view class="popup-body-num">
+						期数
+					</view>
+					<view class="popup-body-amount">
+						还款金额
+					</view>
+				</view>
+				<scroll-view class="popup-body" scroll-y>
+					<view class="popup-body-day" v-for="(item,index) in perList"
+						:style="index%2 === 0 ? 'background-color: #F8F8F8;': ''">
+						<view class="popup-body-num">
+							第{{item.type}}期
+						</view>
+						<view class="popup-body-amount">
+							{{item.money}}
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+		</tm-poup>
+	</view>
+</template>
+
+<script>
+	import LoanCaculate from "../../../components/calculator/LoanCaculate.js"
+	import tmTabs from '@/pagesTools/tm-vuetify/components/tm-tabs/tm-tabs.vue';
+	import tmPoup from '@/pagesTools/tm-vuetify/components/tm-poup/tm-poup.vue';
+	export default {
+		components: {
+			tmTabs,tmPoup
+		},
+		data() {
+			return {
+				painterShow:false,
+				show_1: false,
+				path: '', //生成的图片地址
+				pos: 'center',
+				
+				tabIndex: 0,
+				tabs: [{
+						name: '等额本息',
+					},
+					{
+						name: '等额本金',
+					}
+				],
+				showPoup:false,
+				pos:'bottom',
+				selectedItem: 0,
+				lineOne: "每月还款额固定，所还总利息较多，适合收入稳定者。",
+				ringList: [],
+				houseTotalPrice: "",
+				totalPrice: 0,
+				loanMoney: 0,
+				payMoney: 0,
+				months: 0,
+				monthPay: 0,
+				rate: 0,
+				monthDecMoney: 0,
+				is: true,
+				list: [
+					'等额本息',
+					'等额本金',
+				],
+				active: 0,
+				perList: [],
+				
+				data:""
+			}
+		},
+		onLoad(option) {
+			this.data = option.data;
+			const data = JSON.parse(decodeURIComponent(option.data));
+			this.totalPrice = data.totalPrice * 10000;
+			this.loanMoney = data.loanMoney * 10000;
+			this.payMoney = data.payMoney;
+			this.months = data.months;
+			this.rate = data.rate;
+			this.caculateAcpi(this.active)
+		},
+		methods: {
+			recalculate() {
+				uni.navigateBack()
+			},
+			share(){
+				uni.navigateTo({
+				    url:'./share?data='+this.data
+				})
+			},
+			handler() {
+				// 第一期金额 monthPay  期数 months 递减金额 monthDecMone 存在精度丢失问题 仅参考
+				this.perList = []
+				let num = 1
+				let connt = Number(this.monthPay).toFixed(2)
+				this.perList.push({
+					'type': num,
+					'money': connt
+				})
+				for (let i = 2; i <= this.months; i++) {
+					num = i
+					connt = connt - Number(this.monthDecMoney)
+					this.perList.push({
+						'type': num,
+						'money': connt.toFixed(2)
+					})
+				}
+				this.showPoup = true
+			},
+			tabChange(index) {
+				this.active = index
+				this.caculateAcpi(this.active)
+			},
+			getClass(index, active) {
+				if (active === 0) {
+					if (index === 1) {
+						return 'right-bottom'
+					}
+				}
+				if (active === 1) {
+					if (index === 0) {
+						return 'left-bottom'
+					}
+				}
+			},
+			convertToChinaNum(num) {
+			    var arr1 = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+			    var arr2 = ['', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千','万', '十', '百', '千','亿'];//可继续追加更高位转换值
+			    if(!num || isNaN(num)){
+			        return "零";
+			    }
+			    var english = num.toString().split("")
+			    var result = "";
+			    for (var i = 0; i < english.length; i++) {
+			        var des_i = english.length - 1 - i;//倒序排列设值
+			        result = arr2[i] + result;
+			        var arr1_index = english[des_i];
+			        result = arr1[arr1_index] + result;
+			    }
+			    //将【零千、零百】换成【零】 【十零】换成【十】
+			    result = result.replace(/零(千|百|十)/g, '零').replace(/十零/g, '十');
+			    //合并中间多个零为一个零
+			    result = result.replace(/零+/g, '零');
+			    //将【零亿】换成【亿】【零万】换成【万】
+			    result = result.replace(/零亿/g, '亿').replace(/零万/g, '万');
+			    //将【亿万】换成【亿】
+			    result = result.replace(/亿万/g, '亿');
+			    //移除末尾的零
+			    result = result.replace(/零+$/, '')
+			    //将【零一十】换成【零十】
+			    //result = result.replace(/零一十/g, '零十');//貌似正规读法是零一十
+			    //将【一十】换成【十】
+			    result = result.replace(/^一十/g, '十');
+			    return result;
+			},
+			caculateAcpi(isAcpi) {
+				let monthPay = 0;
+				let totalPay = 0;
+				let that = this
+				if (!isAcpi) {
+					monthPay = LoanCaculate.Acpi(this.rate, this.loanMoney, this.months)
+					totalPay = monthPay * this.months;
+					this.lineOne = "每月还款额固定,所还总利息较多"
+				} else {
+					for (let month = 0; month < this.months; month++) {
+						monthPay = LoanCaculate.AverageCapital(this.rate, this.loanMoney, this.months, month)
+						totalPay += monthPay;
+					}
+					monthPay = LoanCaculate.AverageCapital(this.rate, this.loanMoney, this.months, 0)
+					let nextmonthPay = LoanCaculate.AverageCapital(this.rate, this.loanMoney, this.months, 1)
+					this.monthDecMoney = (monthPay - nextmonthPay).toFixed(2);
+					this.lineOne = `前期还款额较大,每月还款额递减 ${this.monthDecMoney}`
+				}
+				//console.log("月供",Math.ceil(monthPay));
+				this.monthPay = monthPay.toFixed(2);
+
+				//console.log("总还款",Math.ceil(totalPay));
+				let totalInterest = totalPay - this.loanMoney;
+				//console.log("总利息",Math.ceil(totalInterest));
+				this.houseTotalPrice = {
+					name: "房款总价",
+					value: (this.totalPrice / 10000).toFixed(2)
+				}
+				const payMoneyText = this.convertToChinaNum((this.payMoney*100000/this.totalPrice).toFixed(0))
+				const loanMoneyText = this.convertToChinaNum((this.loanMoney*10/this.totalPrice).toFixed(0))
+				this.ringList = [{
+						name: "首付"+payMoneyText+"成",
+						value: (~~this.payMoney).toFixed(2),
+						unit: "万元",
+						color: "#6EBFFF"
+					},
+					{
+						name: "贷款"+loanMoneyText+"成",
+						value: (this.loanMoney / 10000).toFixed(2),
+						unit: "万元",
+						color: "#FFDA7C"
+					},
+					{
+						name: "支付利息",
+						value: (totalInterest / 10000).toFixed(2),
+						unit: "万元",
+						color: "#FF70A0"
+					}
+				]
+				that.painterShow = true;
+			}
+		}
+	}
+</script>
+<style lang="scss" scoped>
+	.container-page {
+		height: 100vh;
+		overflow-y: hidden;
+		background-color: #8CC5FF;
+		background-image: linear-gradient(#8CC5FF, #8CC5FF);
+
+		.header-group {
+			display: flex;
+			background: #409EFF;
+			border-top-right-radius: 15rpx;
+			border-top-left-radius: 15rpx;
+
+			.group {
+				width: 50%;
+				height: 100rpx;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		}
+
+		.container-body {
+			background-color: #FFFFFF;
+			padding-bottom: 30rpx;
+
+			.container-body-head {
+				background-color: #F6F6F6;
+				font-size: 26rpx;
+				color: #979797;
+				text-align: center;
+				line-height: 60rpx;
+			}
+
+			.container-body-title {
+				font-size: 28rpx;
+				text-align: center;
+				padding: 30rpx 0 10rpx 0;
+			}
+
+			.repayment-money {
+				text-align: center;
+
+				.text1 {
+					color: #FA5B33;
+					font-size: 100rpx;
+				}
+
+				.text2 {
+					font-size: 36rpx;
+				}
+
+				.text3 {
+					font-size: 32rpx;
+				}
+			}
+
+			.by-the-month {
+				text-align: center;
+				line-height: 60rpx;
+				text-decoration: underline
+			}
+
+			.amount-tips {
+				text-align: center;
+				color: #EB5149;
+				font-size: 26rpx;
+			}
+
+			.tabel {
+				display: flex;
+				padding: 20rpx 0;
+
+				.tabel-one {
+					width: 50%;
+					text-align: center;
+				}
+			}
+
+			.bottom-tips {
+				margin-top: 30rpx;
+				text-align: center;
+				font-size: 22rpx;
+				color: #979797;
+			}
+
+		}
+	}
+
+	.popup-body {
+		max-height: 800rpx;
+		overflow-y: auto;
+
+		.popup-body-day {
+			display: flex;
+			padding: 15rpx 0;
+
+			.popup-body-num {
+				text-align: center;
+				width: 50%;
+			}
+
+			.popup-body-amount {
+				width: 50%;
+				text-align: center;
+			}
+		}
+	}
+
+	.popup-body-head {
+		display: flex;
+		padding: 15rpx 0;
+		background-color: #EBEBEB;
+
+		.popup-body-num {
+			text-align: center;
+			width: 50%;
+		}
+
+		.popup-body-amount {
+			width: 50%;
+			text-align: center;
+		}
+	}
+
+	.buttom-class {
+		margin-top: 20rpx;
+		border-radius: 30rpx;
+		color: #FFFFFF;
+		background: #409EFF
+	}
+
+	.right-bottom {
+		border-radius: 0 15rpx 0 0;
+	}
+
+	.left-bottom {
+		border-radius: 15rpx 0 0 0;
+	}
+
+	.center-left-bottom {
+		border-radius: 15rpx 15rpx 0 0;
+	}
+
+	.center-right-bottom {
+		border-radius: 15rpx 15rpx 0 0;
+	}
+
+	.btn {
+		margin-top: 50rpx;
+		display: flex;
+
+		.reset {
+			width: 40%;
+			border-radius: 30rpx;
+		}
+
+		.save {
+			width: 40%;
+			border-radius: 30rpx;
+			background-color: #67C23A;
+			color: #FFFFFF;
+
+			&::after {
+				border: none !important;
+			}
+		}
+	}
+</style>

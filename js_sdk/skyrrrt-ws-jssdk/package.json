@@ -1,0 +1,9 @@
+{
+    "id": "skyrrrt-ws-jssdk",
+    "name": "qq地图skd",
+    "version": "1.0",
+    "description": "修改qqsdk,兼容h5、微信小程序",
+    "keywords": [
+        "js,qq,map"
+    ]
+}
