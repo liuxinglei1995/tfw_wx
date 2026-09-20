@@ -209,14 +209,13 @@
 					<text>{{shareUser.companyDept.deptName}}</text>
 				</view>
 			</view>
-			<view style="display: flex;width: 70%;" v-if="hasRoleflag">
+			<view v-if="hasRoleflag" style="display: flex;width: 70%;">
 				<button @tap="showCooprate()" class="btn2" style="width: 50%;">分销合作商</button>
 				<button class="btn3" @tap="gopath()" style="width: 50%;">新房报备</button>
 			</view>
-			<view v-else style="display: flex;width: 70%;">
-				<button class="btn3" style="width: 50%;" @tap="call('4008162019,'+shareUser.utel)">电话联系</button>
-				<button class="btn2" style="width: 50%;" @tap="goChat()">在线咨询</button>
-			</view>
+			<u-button v-if="!hasRoleflag" type="primary" shape="circle" text="电话联系"
+				@tap="call('4008162019,'+shareUser.utel)"></u-button>
+			<u-button v-if="!hasRoleflag" type="warning" shape="circle" text="在线咨询" @tap="goChat()"></u-button>
 		</view>
 		<!-- <previewImage ref="previewImage" :imgs="lpxqlist.imgs" :descs="lpxqlist.descs" :saveBtn="false" :rotateBtn="false"></previewImage> -->
 		<tm-shareSheet @change="shereClick" :actions="shareAct" v-model="shareShow"></tm-shareSheet>
@@ -256,6 +255,7 @@
 <script>
 	var app = getApp();
 	import UIcon from "@/pagesHouse/uview-ui/components/u-icon/u-icon.vue";
+	import UButton from "@/pagesHouse/uview-ui/components/u-button/u-button.vue";
 	import USwiper from "@/pagesHouse/uview-ui/components/u-swiper/u-swiper.vue";
 	import UNavbar from "@/pagesHouse/uview-ui/components/u-navbar/u-navbar.vue";
 	import tmImages from '@/pagesHouse/tm-vuetify/components/tm-images/tm-images.vue';
@@ -283,6 +283,7 @@
 		dicts: ['tfw_decoration_situation'],
 		components: {
 			UIcon,
+			UButton,
 			USwiper,
 			UNavbar,
 			tmPoup,
@@ -840,7 +841,10 @@
 			goChat() {
 				const brokerId = this.shareUser ? this.shareUser.userId : '';
 				if (!brokerId) {
-					uni.showToast({ icon: 'none', title: '暂无法咨询' });
+					uni.showToast({
+						icon: 'none',
+						title: '暂无法咨询'
+					});
 					return;
 				}
 				const d = this.lpxqlist || {};
@@ -853,7 +857,9 @@
 					tradeType: '买房'
 				};
 				uni.navigateTo({
-					url: '/pagesHouse/chat/chat?brokerId=' + brokerId + '&brokerName=' + encodeURIComponent(this.shareUser ? (this.shareUser.nickName || '') : '') + '&houseInfo=' + encodeURIComponent(JSON.stringify(houseInfo))
+					url: '/pagesHouse/chat/chat?brokerId=' + brokerId + '&brokerName=' + encodeURIComponent(this
+						.shareUser ? (this.shareUser.nickName || '') : '') + '&houseInfo=' + encodeURIComponent(JSON
+						.stringify(houseInfo))
 				});
 			},
 
@@ -1311,6 +1317,8 @@
 		z-index: 200;
 		font-size: 25rpx;
 		justify-content: space-between;
+		padding-left: 30rpx;
+		padding-right: 30rpx;
 	}
 
 	.collect {
@@ -1340,6 +1348,11 @@
 		color: white;
 		border-radius: 0;
 		font-size: 28rpx;
+	}
+
+	/* 电话联系/在线咨询：与二手房详情页(houseid.vue)保持一致，圆角覆盖 u-button 的 circle 形状 */
+	.footer2 .u-button {
+		border-radius: 20rpx;
 	}
 
 	.footer2 button:active {

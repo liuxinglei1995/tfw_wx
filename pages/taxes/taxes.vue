@@ -3,7 +3,7 @@
 		<tm-menubars title="天府网税费计算器" iconColor="white"></tm-menubars>
 		<tm-tabs @change="tabChange" v-model="activeIndex" :list="list" align="left" range-key="title"></tm-tabs>
 
-		<tm-sheet :shadow="24" :padding="[12,24]" :margin="[24,24]">
+		<tm-sheet :shadow="24" :padding="[12,24]" :margin="[0,24]">
 			<tm-form @submit="submit" ref="formData" @request="success" method="post" url="">
 				<tm-pickers :default-value.sync="reqData.gouFangXingZhi" rang-key="title" :list="gouFangXingZhi">
 					<tm-input name="gouFangXingZhi" title="购房性质" placeholder="请选择购房性质" disabled
@@ -86,7 +86,7 @@
 			// uni.navigateTo({
 			// 	url: '/pagesTools/pages/calculator/index/index'
 			// })
-			
+
 			let that = this
 			let area = uni.getStorageSync('city') ? uni.getStorageSync('city') : '成都'
 			let zrnx = []
@@ -149,6 +149,17 @@
 			}
 			that.zhuanRangNianXian = zrnx,
 				that.gouFangXingZhi = gouFangXingZhi
+		},
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
 		},
 		/**
 		 * 用户点击右上角分享

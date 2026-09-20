@@ -76,8 +76,14 @@
 	const {
 		t
 	} = initVueI18n(messages)
+	// uni-icons 在本组件模板里直接使用，必须在本组件内注册（页面里注册对它无效）
+	import uniIcons from '@/pagesUser/components/uni-icons/components/uni-icons/uni-icons.vue'
+
 	export default {
 		name: 'UniPagination',
+		components: {
+			uniIcons
+		},
 		emits: ['update:modelValue', 'input', 'change', 'pageSizeChange'],
 		props: {
 			value: {

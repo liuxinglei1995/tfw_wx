@@ -28,7 +28,8 @@
 
 <script>
 	import {
-		getChatSessions
+		getChatSessions,
+		updateMsgTabBadge
 	} from '@/api/chat'
 
 	export default {
@@ -42,6 +43,17 @@
 		onShow() {
 			this.loadSessions()
 		},
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
+		},
 		onPullDownRefresh() {
 			this.loadSessions(() => {
 				uni.stopPullDownRefresh()
@@ -52,7 +64,9 @@
 				const userdata = this.$store.state.user.userdata || {}
 				this.login = !!userdata.userId
 				if (!this.login) {
+					this.sessions = []
 					this.loading = false
+					updateMsgTabBadge(this.sessions)
 					done && done()
 					return
 				}
@@ -62,6 +76,8 @@
 				}).catch(() => {
 					this.sessions = []
 				}).finally(() => {
+					// 同步底部"消息"tab 的未读人数角标
+					updateMsgTabBadge(this.sessions)
 					this.loading = false
 					done && done()
 				})

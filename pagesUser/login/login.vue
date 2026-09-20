@@ -104,7 +104,7 @@
 						<tm-avatar src="https://cdn.tianfucd.com/images/applet/logo.png"></tm-avatar>
 					</view>
 					<view class="tip_des">
-						请同意将微信账户({{userName}})的手机号信息授权给天府网
+						请同意将手机号信息授权给天府网
 					</view>
 					<tm-button style="width: 80%;margin: 0 10%;margin-top: 80rpx;" plan open-type="getPhoneNumber"
 						@getphonenumber="getPhoneNumber" theme="bg-gradient-orange-accent" :round="24"

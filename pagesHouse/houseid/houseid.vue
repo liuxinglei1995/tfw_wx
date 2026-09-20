@@ -583,13 +583,12 @@
 						<view class="flex-top-start mb-30" v-for="(item,index) in houseFollow" :key="index">
 							<tm-avatar :size="100" :shadow="4" :src="item.userAvatar"></tm-avatar>
 							<view style="margin-left: 30rpx;text-align: left !important;">
-								<view style="font-size: 32rpx;font-weight: 700;">
-									{{item.createByName}}
-									<text class="ml-20" style="font-size: 24rpx;font-weight: 400;color: #999999;">
-										{{item.createdAt}}
-									</text>
-								</view>
 								<mp-html class="sideInfo" :content="item.remark" />
+								<!-- 维护信息：放在内容下方，字号小于内容 -->
+								<view class="follow-meta">
+									<text class="follow-meta-name">{{item.createByName}}</text>
+									<text class="follow-meta-time">{{item.createdAt}}</text>
+								</view>
 							</view>
 						</view>
 					</view>
@@ -1378,14 +1377,19 @@
 				this.isshowinfo = false
 			}
 		},
+		onUnload() {
+			// 页面销毁时移除全局监听，避免 refreshData 触发到已卸载的页面实例
+			uni.$off('refreshData', this.refreshDataHandler)
+		},
 		onLoad(e) {
 			console.log(e, "接收的数据");
 			console.log(this.$store.state.user.userdata, "当前登录人");
 
 			// 从详情页返回该页面的获取数据
-			uni.$on('refreshData', () => {
+			this.refreshDataHandler = () => {
 				this.getHouse(e);
-			})
+			}
+			uni.$on('refreshData', this.refreshDataHandler)
 			//处理本人是否查看房源超过指定套数
 			try {
 				if (this.$store.state.user.userdata.userType == '00') {
@@ -1663,6 +1667,24 @@
 
 	.footer2 button:active {
 		filter: brightness(90%);
+	}
+
+	/* 房源评价的维护信息：位于内容下方，字号小于内容，人员排在前面 */
+	.follow-meta {
+		margin-top: 12rpx;
+		display: flex;
+		align-items: center;
+	}
+
+	.follow-meta-name {
+		margin-right: 16rpx;
+		font-size: 24rpx;
+		color: #999999;
+	}
+
+	.follow-meta-time {
+		font-size: 20rpx;
+		color: #BBBBBB;
 	}
 
 	.n {

@@ -11,8 +11,9 @@
 				<text class="title-right" @click="gopage()">查看更多 ></text>
 			</view>
 			<view v-for="(item,index) in homeFeuer" :key="index" @click="houstclick(item.id)">
-				<view class="item-list" >
-					<img :src="'https://static.tianfucd.com/'+item.coverfile" alt="" class="list-img" v-if="item.coverfile">
+				<view class="item-list">
+					<img :src="'https://static.tianfucd.com/'+item.coverfile" alt="" class="list-img"
+						v-if="item.coverfile">
 					<img src="@/static/img/zhanweitu.png" alt="" class="list-img" v-else>
 					<!-- 有视频显示 -->
 					<view v-if=" househead==2 && item.video!=null && item.video!=''"
@@ -65,7 +66,7 @@
 								<text
 									style="color: black;">|{{item.loupanHuxing.bedRoomNum}}室{{item.loupanHuxing.livingRoomNum}}厅</text>
 								<text style="color: black;">|{{item.propertyArea}}㎡</text>
-				
+
 							</view>
 						</view>
 						<!-- 租房中心显示的看房方式 -->
@@ -76,7 +77,7 @@
 						<view class="rightsecond" v-if="houseid==1">
 							{{item.zoneCode?item.zoneCode:item.address}}
 						</view>
-				
+
 						<view class="redprice" v-if="houseid==1">
 							{{item.refPrice}}元/㎡
 						</view>
@@ -95,7 +96,8 @@
 						<!-- 价格  面积 -->
 						<view class="rightprice" v-if="houseid==0||houseid==2||houseid==3">
 							<text v-if="item.type==2">{{item.rental}}元/月</text>
-							<text v-if="item.type==1|| item.type==3">{{item.sellingPrice?item.sellingPrice:"--"}}万</text>
+							<text
+								v-if="item.type==1|| item.type==3">{{item.sellingPrice?item.sellingPrice:"--"}}万</text>
 							<view class="" v-if="item.tfwHousePrice">
 								<view v-if="item.tfwHousePrice.type==1"
 									style="color: #ff0000;font-size: 24rpx;line-height: 30rpx;">
@@ -110,8 +112,8 @@
 										src="/static/icon/house/down.png">
 								</view>
 							</view>
-							<view style="font-size: 24rpx" 
-								v-if="item.type==1|| item.type==3">{{(item.sellingPrice*10000/item.propertyArea).toFixed(0)}}元/㎡</view>
+							<view style="font-size: 24rpx" v-if="item.type==1|| item.type==3">
+								{{(item.sellingPrice*10000/item.propertyArea).toFixed(0)}}元/㎡</view>
 						</view>
 						<view
 							style="display: flex; justify-content: space-around;flex-wrap: wrap; font-size: 24rpx;color:#909399"
@@ -157,6 +159,17 @@
 			return {
 				num1: "num1"
 			};
+		},
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
 		},
 		methods: {
 			//查看更多

@@ -1,6 +1,9 @@
 {
 	"easycom": {
-		"autoscan": true
+		"autoscan": true,
+		"custom": {
+			"^tm-menubars$": "@/tm-vuetify/components/tm-menubars/tm-menubars.vue"
+		}
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
@@ -35,7 +38,7 @@
 		{
 			"path": "pages/message/message",
 			"style": {
-				"navigationBarTitleText": "消息"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
@@ -53,6 +56,10 @@
 		// 	}
 		// }
 	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarBackgroundColor": "#ffffff"
+	},
 	"subPackages": [{
 			"root": "pagesHouse",
 			"pages": [{

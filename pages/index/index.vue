@@ -267,6 +267,18 @@
 			// })
 			this.getswiperimglist();
 		},
+
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
+		},
 		/**
 		 * 生命周期函数--监听页面显示
 		 */
@@ -276,10 +288,10 @@
 		onInit() {
 
 		},
-		onShareAppMessage: function () { 
-		  return { 
-		    title: '自家店  实在', 
-		  }; 
+		onShareAppMessage: function () {
+		  return {
+		    title: '自家店  实在',
+		  };
 		},
 		methods: {
 			// 去a级房源
@@ -366,13 +378,11 @@
 								nowcity: "成都市",
 								cityDistrict: "青羊区",
 							});
-							that.hothouse.params.areaCode = 510105
-							that.hothouse.params.cityCode = that.citynumber
-							that.getlist();
-							// that.dingweixinxi("成都");
-							// that.huoqushuju("成都");
-							// that.getHitsList("青羊区")
-							// that.getHitsListByRand("青羊区")
+							this.hothouse.params.areaCode = 510105
+							that.dingweixinxi("成都");
+							that.huoqushuju("成都");
+							that.getHitsList("青羊区")
+							that.getHitsListByRand("青羊区")
 						}
 					})
 
@@ -512,7 +522,7 @@
 								that.getHitsListByRand("青羊区")
 							}
 						});
-						
+
 						// qqmapsdk.reverseGeocoder({
 						// 	location: {
 						// 		latitude: latitude,

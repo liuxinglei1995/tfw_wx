@@ -1,7 +1,7 @@
 // 应用全局配置
 module.exports = {
 	// baseUrl: 'https://vue.ruoyi.vip/prod-api',
-	 //baseUrl: 'http://localhost:9090',
+	//baseUrl: 'http://localhost:9090',
 	// baseUrl: 'http://192.168.0.100:9090',
 	// baseUrl: 'http://192.168.1.156:9090',
 	baseUrl: 'https://new.tianfucd.com/prod-api',

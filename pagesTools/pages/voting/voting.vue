@@ -80,7 +80,7 @@
 				</view>
 				
 				<view class="tip_des">
-					请同意将微信账户({{userInfo.nc}})的手机号信息授权给天府网
+					请同意将手机号信息授权给天府网
 				</view>
 				
 				<tm-button 

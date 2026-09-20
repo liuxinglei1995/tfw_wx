@@ -1,6 +1,5 @@
 <template>
 	<view style="background-color: #EEEEEE;">
-		<tm-menubars title="我的" iconColor="white" :transparent="true" :showback="false"></tm-menubars>
 		<view style="
 		background: url(https://cdn.tianfucd.com/agent/userbg.png) no-repeat center top;
 		background-repeat: no-repeat;
@@ -15,7 +14,7 @@
 				<!-- <u-button type="primary" @click="logOut">去登陆</u-button> -->
 				<view class="info" style="background-color: unset !important;">
 					<view class="nickname">
-						<text v-if="userInfo.nickName!=null">{{userInfo.nickName}}</text>
+						<text v-if="userInfo.nickName!=null" @tap="openNickDialog">{{userInfo.nickName}}</text>
 						<text v-else @tap="gologin()">去登录</text>
 						<image @tap="rotate" :animation="animationData" class="circle"
 							src="/static/static/assets/my/circle.png"></image>
@@ -90,7 +89,7 @@
 					<image src="/static/static/img/user/ht.png"></image>
 					<text>日报</text>
 				</view>
-				<!-- <view 
+				<!-- <view
 					@tap="toPath('../moreSharing/moreSharing')" class="item">
 					<image src="/static/static/img/user/ht.png"></image>
 					<text>多房源分享</text>
@@ -193,13 +192,13 @@
 				<!-- <tm-col color="text-size-s" :grid="3">
 					<view @tap="toPath('../../pagesUser/up/agent',false)" class="userSeverItem flex-col">
 						<image src="/static/static/img/user/zjrz.png"></image>
-						<view>中介入驻</view>
+						<text>中介入驻</text>
 					</view>
 				</tm-col> -->
 				<!-- <tm-col color="text-size-s" :grid="3">
 					<view @click="todkfw()" class="userSeverItem flex-col">
 						<image src="/static/static/img/user/dkfw.png"></image>
-						<view>贷款服务</view>
+						<text>贷款服务</text>
 					</view>
 				</tm-col> -->
 				<tm-col color="text-size-s" :grid="3">
@@ -240,6 +239,20 @@
 				</tm-col> -->
 			</tm-row>
 		</view>
+
+		<!-- 修改昵称弹窗：微信已不再返回用户昵称，只能用 type="nickname" 让用户主动填写 -->
+		<view v-if="showNickDialog" class="nick-mask" @tap="closeNickDialog">
+			<view class="nick-box" @tap.stop>
+				<view class="nick-title">修改昵称</view>
+				<input class="nick-input" type="nickname" v-model="nickInput" maxlength="20" placeholder="请输入昵称"
+					placeholder-style="color:#bbbbbb" @blur="onNickBlur" />
+				<view class="nick-tip">可点击键盘上方的"使用微信昵称"快捷填入</view>
+				<view class="nick-btns">
+					<view class="nick-btn nick-cancel" @tap="closeNickDialog">取消</view>
+					<view class="nick-btn nick-ok" @tap="saveNickname">保存</view>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -259,6 +272,9 @@
 	import {
 		getConfigKey
 	} from '@/api/system/dict/data.js';
+	import {
+		updateUserProfile
+	} from '@/api/system/user.js';
 
 	export default {
 		components: {
@@ -279,7 +295,9 @@
 				isShow: [0, 0, 0],
 				city: uni.getStorageSync('city'),
 				sell: '',
-				buy: ''
+				buy: '',
+				showNickDialog: false,
+				nickInput: ''
 			};
 		},
 
@@ -308,13 +326,23 @@
 		 * 生命周期函数--监听页面加载
 		 */
 		onLoad: function() {
-		
+
 		},
 
 		/**
 		 * 生命周期函数--监听页面初次渲染完成
 		 */
-		onReady: function() {},
+		onReady: function() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
+		},
 
 		/**
 		 * 生命周期函数--监听页面隐藏
@@ -341,6 +369,51 @@
 		 */
 		onShareAppMessage: function() {},
 		methods: {
+			// 打开修改昵称弹窗（微信已不返回用户昵称，必须由用户主动填写一次）
+			openNickDialog() {
+				if (!this.userInfo || !this.userInfo.userId) {
+					this.gologin()
+					return
+				}
+				this.nickInput = this.userInfo.nickName || ''
+				this.showNickDialog = true
+			},
+			closeNickDialog() {
+				this.showNickDialog = false
+			},
+			// type="nickname" 的输入框在选用微信昵称后，通过 blur 回填
+			onNickBlur(e) {
+				const val = (e.detail && e.detail.value) || ''
+				if (val) {
+					this.nickInput = val
+				}
+			},
+			// 保存昵称
+			saveNickname() {
+				const nickName = (this.nickInput || '').trim()
+				if (!nickName) {
+					this.$modal.msgError('请输入昵称')
+					return
+				}
+				if (nickName === (this.userInfo.nickName || '')) {
+					this.showNickDialog = false
+					return
+				}
+				this.$modal.loading('保存中...')
+				updateUserProfile({
+					nickName
+				}).then(() => {
+					this.$modal.closeLoading()
+					this.showNickDialog = false
+					this.$modal.msgSuccess('昵称修改成功')
+					// 刷新本地缓存的用户信息
+					this.$store.dispatch('user/GetInfo').then(() => {
+						this.userInfo = this.$store.state.user.userdata
+					})
+				}).catch(() => {
+					this.$modal.closeLoading()
+				})
+			},
 			todkfw(){
 				wx.switchTab({
 					url:"../dkfw/dkfw"
@@ -398,7 +471,6 @@
 				// 			icon: "none"
 				// 		});
 				// 	});
-
 				// })
 
 			},
@@ -451,6 +523,7 @@
 		}
 	};
 </script>
+
 <style>
 	.portrait {
 		width: 146rpx;
@@ -592,5 +665,77 @@
 		z-index: 10;
 		top: 0rpx;
 		opacity: 0;
+	}
+
+	/* 修改昵称弹窗 */
+	.nick-mask {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.45);
+		z-index: 9999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.nick-box {
+		width: 600rpx;
+		background: #FFFFFF;
+		border-radius: 16rpx;
+		padding: 40rpx 40rpx 30rpx;
+		box-sizing: border-box;
+	}
+
+	.nick-title {
+		font-size: 34rpx;
+		font-weight: bold;
+		color: #333333;
+		text-align: center;
+	}
+
+	.nick-input {
+		margin-top: 30rpx;
+		height: 88rpx;
+		background: #F5F6F7;
+		border-radius: 12rpx;
+		padding: 0 24rpx;
+		box-sizing: border-box;
+		font-size: 30rpx;
+		color: #333333;
+		text-align: left;
+	}
+
+	.nick-tip {
+		margin-top: 16rpx;
+		font-size: 24rpx;
+		color: #999999;
+	}
+
+	.nick-btns {
+		display: flex;
+		margin-top: 36rpx;
+	}
+
+	.nick-btn {
+		flex: 1;
+		height: 80rpx;
+		line-height: 80rpx;
+		text-align: center;
+		border-radius: 40rpx;
+		font-size: 30rpx;
+	}
+
+	.nick-cancel {
+		background: #F2F2F2;
+		color: #666666;
+		margin-right: 20rpx;
+	}
+
+	.nick-ok {
+		background: #00aaff;
+		color: #FFFFFF;
 	}
 </style>

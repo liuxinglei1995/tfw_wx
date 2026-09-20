@@ -307,6 +307,17 @@
 			})
 
 		},
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
+		},
 		methods: {
 			back: function() {
 				uni.navigateBack({

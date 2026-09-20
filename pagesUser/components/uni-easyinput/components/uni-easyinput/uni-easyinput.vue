@@ -138,8 +138,14 @@ function obj2strStyle(obj) {
 	}
 	return style;
 }
+// uni-icons 在本组件模板里直接使用，必须在本组件内注册（页面里注册对它无效）
+import uniIcons from '@/pagesUser/components/uni-icons/components/uni-icons/uni-icons.vue'
+
 export default {
 	name: 'uni-easyinput',
+	components: {
+		uniIcons
+	},
 	emits: ['click', 'iconClick', 'update:modelValue', 'input', 'focus', 'blur', 'confirm', 'clear', 'eyes', 'change', 'keyboardheightchange'],
 	model: {
 		prop: 'modelValue',

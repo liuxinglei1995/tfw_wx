@@ -44,9 +44,14 @@
 	 * @event {Function} maskClick 点击遮罩触发
 	 */
 
+	// 定位样式 transClass 是靠 uni-transition 应用的，必须在本组件内注册；
+	// 在页面里注册对它无效（模板作用域不同），漏了会导致弹窗排在页面最下方
+	import uniTransition from '@/pagesUser/components/uni-transition/components/uni-transition/uni-transition.vue'
+
 	export default {
 		name: 'uniPopup',
 		components: {
+			uniTransition,
 			// #ifdef H5
 			keypress
 			// #endif

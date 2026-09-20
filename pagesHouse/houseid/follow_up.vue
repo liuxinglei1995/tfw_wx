@@ -1,14 +1,23 @@
 <template>
 	<view class="">
 		<tm-menubars title="房源跟进" iconColor="white"></tm-menubars>
-		<view style="height: 700rpx;">
-			<view v-for="(item,index) in list">
-				<uni-card v-if="item.type==1" :title="item.way+' — '+item.deptName+'  '+item.createByName" :extra="item.createdAt">
-					<text style="color: #00aa00;">{{removePTags(item.remark)}}</text>
-				</uni-card>
-				<uni-card v-if="item.type==2" :title="'评价 — '+item.deptName+'  '+item.createByName" :extra="item.createdAt">
-					<text style="color: #00aa00;">{{removePTags(item.remark)}}</text>
-				</uni-card>
+		<view style="height: 700rpx;overflow-y: auto;">
+			<view v-for="(item,index) in list" :key="index">
+				<view class="follow-card">
+					
+					<view class="follow-card-body">
+						<text style="color: #00aa00;">{{removePTags(item.remark)}}</text>
+					</view>
+					
+					<!-- 维护信息（部门）排最前，与人员同一行、字号更小 -->
+					<view class="follow-card-foot">
+						<text v-if="item.type==1" class="follow-card-way">{{item.way}}</text>
+						<text v-if="item.type==2" class="follow-card-way">评价</text>
+						<text class="follow-card-dept">{{item.deptName}}</text>
+						<text class="follow-card-name">{{item.createByName}}</text>
+						<text class="follow-card-time">{{item.createdAt}}</text>
+					</view>
+				</view>
 			</view>
 		</view>
 		
@@ -193,8 +202,12 @@
 						icon: "success",
 						title: "成功"
 					})
+					// 通知房源详情页刷新（跟进标签 / 房源评价列表）
+					uni.$emit('refreshData');
 					getfloower({
-						houseId: this.reqData.houseId
+						houseId: this.reqData.houseId,
+						pageNum: 1,
+						pageSize: 100
 					}).then(response => {
 						this.list = response.rows;
 					})
@@ -227,8 +240,12 @@
 						icon: "success",
 						title: "成功"
 					})
+					// 通知房源详情页刷新（跟进标签）
+					uni.$emit('refreshData');
 					getfloower({
-						houseId: this.reqData.houseId
+						houseId: this.reqData.houseId,
+						pageNum: 1,
+						pageSize: 100
 					}).then(response => {
 						this.list = response.rows;
 						console.log(response, "777");
@@ -263,8 +280,12 @@
 						icon: "success",
 						title: "成功"
 					})
+					// 通知房源详情页刷新（房源评价列表）
+					uni.$emit('refreshData');
 					getfloower({
-						houseId: this.reqData.houseId
+						houseId: this.reqData.houseId,
+						pageNum: 1,
+						pageSize: 100
 					}).then(response => {
 						this.list = response.rows;
 						console.log(response, "777");
@@ -391,5 +412,70 @@
 		text-align: left;
 		color: #333333;
 		letter-spacing: 0px;
+	}
+
+	/* 跟进/评价卡片 */
+	.follow-card {
+		margin: 20rpx 24rpx;
+		padding: 24rpx;
+		background-color: #FFFFFF;
+		border-radius: 12rpx;
+		box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+	}
+
+	.follow-card-body {
+		margin-top: 16rpx;
+		font-size: 30rpx;
+		line-height: 44rpx;
+	}
+
+	/* 维护信息行：内容下方，整行字号小于内容 */
+	.follow-card-foot {
+		margin-top: 16rpx;
+		display: flex;
+		align-items: center;
+		font-size: 22rpx;
+		color: #999999;
+	}
+	
+	/* 维护信息（跟进类型）：排在最前面，字号最小 */
+	.follow-card-way {
+	    flex-shrink: 0;
+	    max-width: 300rpx;
+	    margin-right: 10rpx;
+	    font-size: 20rpx;
+	    color: #333333;
+	    font-weight: bold;   /* 新增这行 */
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	}
+
+	/* 维护信息（所属部门）：排在最前面，字号最小 */
+	.follow-card-dept {
+		flex-shrink: 0;
+		max-width: 300rpx;
+		margin-right: 10rpx;
+		font-size: 20rpx;
+		color: #BBBBBB;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* 人员 */
+	.follow-card-name {
+		flex-shrink: 0;
+		font-size: 22rpx;
+		color: #999999;
+	}
+
+	/* 时间占满剩余宽度并右对齐 */
+	.follow-card-time {
+		flex: 1;
+		margin-left: 16rpx;
+		text-align: right;
+		font-size: 22rpx;
+		color: #BBBBBB;
 	}
 </style>

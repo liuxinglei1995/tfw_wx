@@ -20,6 +20,8 @@
 
 <script>
 	import tableCheckbox from './table-checkbox.vue'
+	// uni-th 在本组件模板里直接使用，必须在本组件内注册（页面里注册对它无效）
+	import uniTh from '@/pagesUser/components/uni-table/components/uni-th/uni-th.vue'
 /**
  * Tr 表格行组件
  * @description 表格行组件 仅包含 th,td 组件
@@ -27,7 +29,7 @@
  */
 export default {
 	name: 'uniTr',
-	components: { tableCheckbox },
+	components: { tableCheckbox, uniTh },
 	props: {
 		disabled: {
 			type: Boolean,

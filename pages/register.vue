@@ -56,6 +56,17 @@
     created() {
       this.getCode()
     },
+    onReady() {
+      uni.setStatusBarStyle({
+        style: 'light',
+        success: () => {
+          console.log('状态栏样式设置成功');
+        },
+        fail: (err) => {
+          console.error('状态栏样式设置失败', err);
+        }
+      });
+    },
     methods: {
       // 用户登录
       handleUserLogin() {
@@ -97,7 +108,7 @@
           	content: "恭喜你，您的账号 " + this.registerForm.username + " 注册成功！",
           	success: function (res) {
           		if (res.confirm) {
-                uni.redirectTo({ url: `/pagesUser/login/login` });
+                  uni.redirectTo({ url: `/pagesUser/login/login` });
           		}
           	}
           })

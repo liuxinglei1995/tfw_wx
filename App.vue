@@ -5,6 +5,9 @@
 	import {
 		getToken
 	} from '@/utils/auth'
+	import {
+		refreshMsgTabBadge
+	} from '@/api/chat'
 
 	export default {
 		onLaunch: function() {
@@ -58,7 +61,15 @@
 				}
 			})
 		},
+		onShow: function() {
+			this.refreshMsgBadge()
+		},
 		methods: {
+			// 刷新底部"消息"tab 角标（有未读消息的人数）
+			refreshMsgBadge() {
+				if (!getToken()) return
+				refreshMsgTabBadge()
+			},
 			// 初始化应用
 			initApp() {
 				// 初始化应用配置

@@ -436,7 +436,7 @@
 	}
 
 	.wrap {
-		padding: 24rpx;
+		padding: 0 24rpx 24rpx;
 		box-sizing: border-box;
 	}
 

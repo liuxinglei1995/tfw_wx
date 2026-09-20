@@ -1,7 +1,7 @@
 <template>
 	<view class="home">
 		<tm-menubars title="天府网" iconColor="white" :showback="false"></tm-menubars>
-		
+
 		<view>
 			由
 		</view>
@@ -35,19 +35,30 @@
 		},
 		data() {
 			return {
-				
+
 			}
 		},
+		onReady() {
+			uni.setStatusBarStyle({
+				style: 'light',
+				success: () => {
+					console.log('状态栏样式设置成功');
+				},
+				fail: (err) => {
+					console.error('状态栏样式设置失败', err);
+				}
+			});
+		},
 		methods: {
-			
+
 		}
 	}
 </script>
 
 <style>
-.home {
-		width: 100%;
-		overflow-x: hidden;
-		overflow-y: hidden;
-	}
+	.home {
+			width: 100%;
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
 </style>
