@@ -212,6 +212,17 @@
 			    result = result.replace(/^一十/g, '十');
 			    return result;
 			},
+			// 成数专用：支持小数，7.5 → "七成五"、3 → "三成"
+			// （convertToChinaNum 只认整数，直接传小数会拆到小数点得到 "二百undefined十五" 这类乱码）
+			convertToChinaCheng(num) {
+				const n = Number(num)
+				if (!n || isNaN(n)) return "零成"
+				const intPart = Math.floor(n)
+				const decPart = Math.round((n - intPart) * 10)
+				let text = this.convertToChinaNum(intPart) + "成"
+				if (decPart > 0) text += this.convertToChinaNum(decPart)
+				return text
+			},
 			caculateAcpi(isAcpi) {
 				let monthPay = 0;
 				let totalPay = 0;
@@ -240,16 +251,18 @@
 					name: "房款总价",
 					value: (this.totalPrice / 10000).toFixed(2)
 				}
-				const payMoneyText = this.convertToChinaNum((this.payMoney*100000/this.totalPrice).toFixed(0))
-				const loanMoneyText = this.convertToChinaNum((this.loanMoney*10/this.totalPrice).toFixed(0))
+				// 成数可能是小数（七五成=7.5、八五成=8.5），不能 toFixed(0)，
+				// 否则 7.5 被四舍五入成 8、8.5 成 9，显示的成数就错了
+				const payMoneyText = this.convertToChinaCheng(this.payMoney * 100000 / this.totalPrice)
+				const loanMoneyText = this.convertToChinaCheng(this.loanMoney * 10 / this.totalPrice)
 				this.ringList = [{
-						name: "首付"+payMoneyText+"成",
-						value: (~~this.payMoney).toFixed(2),
+						name: "首付"+payMoneyText,
+						value: Number(this.payMoney).toFixed(2),
 						unit: "万元",
 						color: "#6EBFFF"
 					},
 					{
-						name: "贷款"+loanMoneyText+"成",
+						name: "贷款"+loanMoneyText,
 						value: (this.loanMoney / 10000).toFixed(2),
 						unit: "万元",
 						color: "#FFDA7C"

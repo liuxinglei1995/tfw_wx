@@ -1,7 +1,16 @@
 <template>
 	<page-meta :page-style="'overflow:'+(show?'hidden':'visible')"></page-meta>
 	<view>
-		<view style="height: 1350rpx;overflow-y: auto;">
+		<!-- 时间筛选：本日 / 本周 / 本月 -->
+		<view class="browse-filter">
+			<picker :range="periodOptions" range-key="label" :value="periodIndex" @change="onPeriodChange">
+				<view class="browse-filter-value">
+					{{ periodLabel }}
+					<text class="browse-filter-arrow">▾</text>
+				</view>
+			</picker>
+		</view>
+		<view class="browse-list">
 			<uni-card v-for="(item, index) in viewList" :key="index">
 				<div class="browse-tags">
 					<div class="browse-tags-left">
@@ -57,7 +66,7 @@
 				</view>
 			</uni-card>
 		</view>
-		<view style=" position: fixed;width: 100%;">
+		<view class="browse-pager">
 			<uni-pagination title="标题文字" show-icon="true" :total="total" :pageSize="queryData.pageSize"
 				:current="queryData.pageNum" @change="change"></uni-pagination>
 		</view>
@@ -189,7 +198,17 @@
 				queryData: {
 					pageNum: 1,
 					pageSize: 10,
+					beginTime: null,
+					endTime: null,
 				},
+				// 时间筛选，默认本日
+				periodIndex: 0,
+				periodLabel: '本日',
+				periodOptions: [
+					{ label: '本日', value: 'day' },
+					{ label: '本周', value: 'week' },
+					{ label: '本月', value: 'month' }
+				],
 				viewList: [],
 				houseViews: [],
 				viewQuery: {
@@ -216,6 +235,8 @@
 		onLoad() {
 			if (this.$store.state.user.userdata.userid != 116)
 				this.queryData.cityCode = this.$store.state.user.userdata.dept.cityCode
+			// 默认本日
+			this.applyPeriod()
 			this.getList();
 		},
 		methods: {
@@ -236,6 +257,39 @@
 			change(e) {
 				this.queryData.pageNum = e.current
 				this.getList();
+			},
+			// 按"本日/本周/本月"算出查询的起止日期（yyyy-MM-dd）
+			getPeriodRange(type) {
+				const now = new Date()
+				const pad = (n) => (n < 10 ? '0' + n : '' + n)
+				const fmt = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+				const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+				if (type === 'week') {
+					// 周一作为一周的第一天（getDay: 0=周日）
+					const day = start.getDay() === 0 ? 7 : start.getDay()
+					start.setDate(start.getDate() - (day - 1))
+				} else if (type === 'month') {
+					start.setDate(1)
+				}
+				return {
+					beginTime: fmt(start),
+					endTime: fmt(now)
+				}
+			},
+			// 把当前选中的时间范围写入查询参数
+			applyPeriod() {
+				const option = this.periodOptions[this.periodIndex]
+				this.periodLabel = option ? option.label : ''
+				const range = this.getPeriodRange(option ? option.value : 'day')
+				this.queryData.beginTime = range.beginTime
+				this.queryData.endTime = range.endTime
+			},
+			// 切换本日 / 本周 / 本月
+			onPeriodChange(e) {
+				this.periodIndex = Number(e.detail.value)
+				this.applyPeriod()
+				this.queryData.pageNum = 1
+				this.getList()
 			},
 			// 关闭指定弹窗
 			closePopup(ref) {
@@ -392,6 +446,56 @@
 	.background-blue {
 		background-color: #abc4ff;
 	}
+	/* 时间筛选栏 */
+	.browse-filter {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		box-sizing: border-box;
+		height: 88rpx;
+		padding: 0 24rpx;
+		background-color: #FFFFFF;
+		border-bottom: 1rpx solid #F0F2F5;
+	}
+
+	.browse-filter-value {
+		padding: 8rpx 24rpx;
+		border-radius: 28rpx;
+		background-color: #F0F7FF;
+		font-size: 26rpx;
+		color: #3C9CFF;
+	}
+
+	.browse-filter-arrow {
+		margin-left: 6rpx;
+		font-size: 22rpx;
+	}
+
+	/* 列表区：占满"视口高度 - 筛选栏 - 底部分页条"，内容在内部滚动 */
+	.browse-list {
+		height: calc(100vh - 188rpx);
+		overflow-y: auto;
+	}
+
+	/* 分页条固定到屏幕底部。
+	   原来写的是 position: fixed 但没给 top/bottom，它会停在原文档流位置（1350rpx 处），
+	   手机视口装不下，就被顶到屏幕外了，所以看不到分页 */
+	.browse-pager {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 100rpx;
+		padding: 0 24rpx;
+		background-color: #FFFFFF;
+		box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+	}
+
 	/* ===== 浏览历史列表 ===== */
 	.browse-tags {
 		display: flex;

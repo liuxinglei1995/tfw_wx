@@ -90,14 +90,39 @@
 					<view class="py-12 px-24 mx-12 mb-12 round-3 border-b-1 grey text">
 						<text class="text-size-n text-weight-b ">房源详情</text>
 					</view>
+					<uni-forms-item label="产权面积" name="propertyArea" label-width="80px">
+						<uni-easyinput v-model="reqData.propertyArea" placeholder="产权面积" />
+					</uni-forms-item>
 					<uni-forms-item label="套内面积" name="usableArea" label-width="80px">
 						<uni-easyinput v-model="reqData.usableArea" placeholder="套内面积" />
 					</uni-forms-item>
-					<uni-forms-item label="使用面积" name="propertyArea" label-width="80px">
-						<uni-easyinput v-model="reqData.propertyArea" placeholder="使用面积" />
-					</uni-forms-item>
 					<uni-forms-item label="房源特色" name="features" label-width="80px">
 						<uni-easyinput type="textarea" v-model="reqData.features" placeholder="房源特色" />
+					</uni-forms-item>
+					<uni-forms-item label="户型图" name="huxingId" label-width="80px">
+						<uni-data-select v-model="reqData.huxingId" :localdata="huxingOptions"
+							placeholder="请选择户型图"></uni-data-select>
+					</uni-forms-item>
+					<uni-forms-item label="产权日期" name="titleDeedDate" label-width="80px">
+						<picker mode="date" :value="reqData.titleDeedDate" @change="titleDeedDateChange">
+							<view class="date-picker-value">{{ reqData.titleDeedDate || '请选择产权日期' }}</view>
+						</picker>
+					</uni-forms-item>
+					<uni-forms-item label="店铺标签" name="featuredTags" label-width="80px">
+						<uni-data-checkbox v-model="reqData.featuredTags" :multiple="true" :max="3"
+							:localdata="dictFind.dictUniSelect(dict.type.tfw_featured_tags)"></uni-data-checkbox>
+					</uni-forms-item>
+					<uni-forms-item label="是否公盘" name="ifPublic" label-width="80px">
+						<uni-data-select v-model="reqData.ifPublic"
+							:localdata="dictFind.dictUniSelect(dict.type.twf_sfgp)"></uni-data-select>
+					</uni-forms-item>
+					<uni-forms-item label="是否贷款" name="collateral" label-width="80px">
+						<uni-data-select v-model="reqData.collateral"
+							:localdata="dictFind.dictUniSelect(dict.type.tfw_mortgage_situation)"></uni-data-select>
+					</uni-forms-item>
+					<uni-forms-item label="交易权属" name="transactionOwnership" label-width="80px">
+						<uni-data-select v-model="reqData.transactionOwnership"
+							:localdata="dictFind.dictUniSelect(dict.type.tfw_tosp)"></uni-data-select>
 					</uni-forms-item>
 					<view class="py-12 px-24 mx-12  mb-12 round-3 border-b-1 grey text">
 						<text class="text-size-n text-weight-b ">封面图</text>
@@ -237,16 +262,19 @@
 	import uniFormsItem from '@/pagesUser/components/uni-forms/components/uni-forms-item/uni-forms-item';
 	import uniEasyinput from "@/pagesUser/components/uni-easyinput/components/uni-easyinput/uni-easyinput.vue";
 	import uniDataSelect from "@/pagesUser/components/uni-data-select/components/uni-data-select/uni-data-select.vue";
+	import uniDataCheckbox from "@/pagesUser/components/uni-data-checkbox/components/uni-data-checkbox/uni-data-checkbox.vue";
 	import {
 		getFangyuan,
 		updateFangyuan,
+		listHuxing,
 
 	} from '@/api/houst.js'
 	export default {
 		dicts: ['tfw_property_type', 'tfw_house_structure', 'tfw_decoration_situation', 'tfw_housing_orientation',
 			'tfw_heating_type', 'tfw_elevator_situation', 'twf_fwxz', "tfw_property_rights", 'tfw_sfwy',
 			'tfw_property_ownership', 'tfw_entrustment_method', 'tfw_source_commission', 'tfw_rent_sale', 'tfw_kffs',
-			'tfw_electricity_consumption', 'tfw_ecommendation_level','tfw_house_commission_method'
+			'tfw_electricity_consumption', 'tfw_ecommendation_level','tfw_house_commission_method',
+			'twf_sfgp', 'tfw_mortgage_situation', 'tfw_tosp', 'tfw_featured_tags'
 		],
 		components: {
 			uRadio,
@@ -257,6 +285,7 @@
 			uniFormsItem,
 			uniEasyinput,
 			uniDataSelect,
+			uniDataCheckbox,
 		},
 		data() {
 			return {
@@ -291,7 +320,7 @@
 					ifOnly: "", //是否唯一
 					equityOwnership: "", //产权所有
 					usableArea: "", //套内面积
-					propertyArea: "", //使用面积
+					propertyArea: "", //产权面积
 					features: '', //房源特色
 					commission: "", //售卖佣金
 					sellingPrice: "", //出售价格
@@ -304,6 +333,12 @@
 					kfang: '', //看房方式
 					entrustmentSource: '', //委托来源
 					entrustmentMethod: '', //委托方式
+					huxingId: null, //户型图
+					titleDeedDate: '', //产权日期
+					featuredTags: [], //店铺标签（多选，提交时转成逗号分隔字符串）
+					ifPublic: null, //是否公盘
+					collateral: null, //是否贷款
+					transactionOwnership: null, //交易权属
 				},
 				rules: {
 					title: { rules:[{ required: true, errorMessage: '请填写标题', }] },
@@ -324,12 +359,13 @@
 					ownershipYears: { rules:[{ required: true, errorMessage: '请选择产权年限', }] },
 					ifOnly: { rules:[{ required: true, errorMessage: '请选择是否唯一', }] },
 					equityOwnership: { rules:[{ required: true, errorMessage: '请选择产权所有情况', }] },
-					propertyArea: { rules:[{ required: true, errorMessage: '请输入使用面积', }] },
+					propertyArea: { rules:[{ required: true, errorMessage: '请输入产权面积', }] },
 					kfang: { rules:[{ required: true, errorMessage: '请选择看房方式', }] },
 					entrustmentSource: { rules:[{ required: true, errorMessage: '请选择委托来源', }] },
 					entrustmentMethod: { rules:[{ required: true, errorMessage: '请选择委托方式', }] },
 				},
 				id: 0,
+				huxingOptions: [], //户型图下拉
 				checkList: {},
 				rate: 0,
 				czlist: [
@@ -396,11 +432,23 @@
 					if (res.data.equityOwnership) {
 						res.data.equityOwnership = res.data.equityOwnership.toString()
 					}
+					// 店铺标签后端存的是逗号分隔字符串，多选组件需要数组
+					if (res.data.featuredTags) {
+						res.data.featuredTags = String(res.data.featuredTags).split(',')
+					} else {
+						res.data.featuredTags = []
+					}
+					// 产权日期可能带时间部分，原生 date picker 只认 yyyy-MM-dd
+					if (res.data.titleDeedDate) {
+						res.data.titleDeedDate = String(res.data.titleDeedDate).substring(0, 10)
+					}
 					that.setData({
 						reqData: res.data,
 						id: res.data.id
 
 					})
+					// 加载该小区的户型列表（户型图下拉）
+					that.loadHuxing(res.data.xqId)
 					console.log(this.reqData, "4444");
 				})
 		},
@@ -463,11 +511,21 @@
 				console.log(this.reqData.grade, "4456s");
 			},
 			/**
-			 * 产权日期
+			 * 产权日期（原生 date picker，value 直接是 yyyy-MM-dd）
 			 * @param {Object} e
 			 */
-			cqrqSelect(e) {
-				this.reqData.titleDeedDate = (e.year + '-' + e.month + '-' + e.day)
+			titleDeedDateChange(e) {
+				this.reqData.titleDeedDate = e.detail.value
+			},
+			// 加载该小区的户型列表，供"户型图"下拉使用
+			loadHuxing(xqId) {
+				if (!xqId) return
+				listHuxing({ xqId: xqId }).then(res => {
+					this.huxingOptions = (res.rows || []).map(item => ({
+						value: item.id,
+						text: item.title
+					}))
+				})
 			},
 			initType() {
 				// if(this.reqData.type === 1) 
@@ -491,6 +549,10 @@
 			},
 			save() {
 				this.reqData.phoneNumber = JSON.stringify(this.reqData.phoneNumber)
+				// 店铺标签：多选数组转成后端需要的逗号分隔字符串
+				if (Array.isArray(this.reqData.featuredTags)) {
+					this.reqData.featuredTags = this.reqData.featuredTags.join(',')
+				}
 				updateFangyuan(this.reqData).then(res => {
 					uni.showLoading({
 						title: '修改成功'
@@ -510,6 +572,18 @@
 <style>
 	.uni-easyinput {
 		margin-right: 5px;
+	}
+
+	/* 产权日期 picker 的展示框 */
+	.date-picker-value {
+		height: 35px;
+		line-height: 35px;
+		padding: 0 10px;
+		border: 1px solid #e5e5e5;
+		border-radius: 5px;
+		color: #333333;
+		font-size: 14px;
+		background-color: #fff;
 	}
 
 	.uni-forms-item {

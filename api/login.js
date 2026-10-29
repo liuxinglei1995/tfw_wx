@@ -30,6 +30,17 @@ export function wxlogin(code, encryptedIv, encryptedData) {
 		'data': data
 	})
 }
+// APP 端微信登录：uni.login({provider:'weixin'}) 拿到的 code
+export function appWxLogin(code) {
+	return request({
+		'url': '/appWxLogin',
+		'method': 'post',
+		'data': {
+			code
+		}
+	})
+}
+
 // dy
 export function dylogin(data) {
 

@@ -1,7 +1,7 @@
 import config from '@/config'
 import storage from '@/utils/storage'
 import constant from '@/utils/constant'
-import { login, logout, getInfo,wxlogin,dylogin } from '@/api/login'
+import { login, logout, getInfo,wxlogin,dylogin, appWxLogin as appWxLoginApi } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import {getUserProfile} from '@/api/system/user.js'
 const baseUrl = config.baseUrl
@@ -81,6 +81,18 @@ const user = {
         })
       })
     },
+	// APP 端微信登录
+	appWxLogin({ commit }, code) {
+	  return new Promise((resolve, reject) => {
+	    appWxLoginApi(code).then(res => {
+	      setToken(res.token)
+	      commit('SET_TOKEN', res.token)
+	      resolve()
+	    }).catch(error => {
+	      reject(error)
+	    })
+	  })
+	},
 	// dy登录
 	dyLogin({ commit }, userInfo) {
 	console.log("11111111111111111111111111111111");

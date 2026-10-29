@@ -61,6 +61,11 @@
 			<view class="login-btn" @click="handleLogin()">
 				{{config.loginType==1?'登录':'登录/注册'}}
 			</view>
+			<!-- APP 端微信登录（需要配置微信开放平台移动应用） -->
+			<view class="wx-login-btn" @click="appWxLogin()">
+				<image class="wx-login-icon" src="/static/login/login/wechat.png" mode="aspectFit" />
+				<text>微信登录</text>
+			</view>
 			<view class="login-bottom-footer">
 				登录即代表您已阅读并同意<span>《用户协议》</span>与<span>《隐私政策》</span>
 			</view>
@@ -536,6 +541,30 @@
 				this.$store.dispatch('user/GetInfo').then(res => {
 					this.$tab.navigateBack();
 				})
+			},
+			// APP 端微信登录
+			appWxLogin() {
+				uni.login({
+					provider: 'weixin',
+					onlyAuthorize: true,
+					success: (res) => {
+						if (!res.code) {
+							this.$modal.msgError('未获取到微信授权码')
+							return
+						}
+						this.$modal.loading('登录中，请耐心等待...')
+						this.$store.dispatch('user/appWxLogin', res.code).then(() => {
+							this.$modal.closeLoading()
+							this.loginSuccess()
+						}).catch(() => {
+							this.$modal.closeLoading()
+						})
+					},
+					fail: (err) => {
+						console.log('微信登录失败', err)
+						this.$modal.msgError('微信登录已取消')
+					}
+				})
 			}
 		}
 	}
@@ -650,6 +679,28 @@
 		text-align: center;
 		border-radius: 80rpx;
 		cursor: pointer;
+	}
+
+	/* APP 端微信登录按钮 */
+	.wx-login-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 80rpx;
+		margin-top: 24rpx;
+		border: 1rpx solid #07C160;
+		border-radius: 80rpx;
+		background-color: #fff;
+		color: #07C160;
+		font-size: 30rpx;
+		box-sizing: border-box;
+	}
+
+	.wx-login-icon {
+		width: 40rpx;
+		height: 40rpx;
+		margin-right: 12rpx;
 	}
 
 	.login-form {

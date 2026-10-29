@@ -49,6 +49,10 @@
 <script>
   import dataPicker from "../uni-data-pickerview/uni-data-picker.js"
   import DataPickerView from "../uni-data-pickerview/uni-data-pickerview.vue"
+  // 本组件模板里直接用了 <uni-icons> / <uni-load-more>，必须在本组件内注册
+  // （这些组件在 pagesUser/components 下，easycom 扫不到）
+  import uniIcons from "@/pagesUser/components/uni-icons/components/uni-icons/uni-icons.vue"
+  import uniLoadMore from "@/pagesUser/components/uni-load-more/components/uni-load-more/uni-load-more.vue"
 
   /**
    * DataPicker 级联选择
@@ -78,7 +82,9 @@
     emits: ['popupopened', 'popupclosed', 'nodeclick', 'input', 'change', 'update:modelValue','inputclick'],
     mixins: [dataPicker],
     components: {
-      DataPickerView
+      DataPickerView,
+      uniIcons,
+      uniLoadMore
     },
     props: {
       options: {

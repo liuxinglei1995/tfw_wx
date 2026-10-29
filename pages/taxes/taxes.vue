@@ -4,7 +4,9 @@
 		<tm-tabs @change="tabChange" v-model="activeIndex" :list="list" align="left" range-key="title"></tm-tabs>
 
 		<tm-sheet :shadow="24" :padding="[12,24]" :margin="[0,24]">
-			<tm-form @submit="submit" ref="formData" @request="success" method="post" url="">
+			<!-- 不要写 url=""：小程序会把它编译成裸属性 url，运行时值是 "true"，
+			     tm-form 会因此向 "/true" 发一次非法请求。不写则取默认空串，不会请求。 -->
+			<tm-form @submit="submit" ref="formData" @request="success" method="post">
 				<tm-pickers :default-value.sync="reqData.gouFangXingZhi" rang-key="title" :list="gouFangXingZhi">
 					<tm-input name="gouFangXingZhi" title="购房性质" placeholder="请选择购房性质" disabled
 						:value="obTstr2(reqData.gouFangXingZhi)" right-icon="icon-angle-right"></tm-input>
@@ -218,7 +220,9 @@
 				e.area = uni.getStorageSync('cityCode') ? uni.getStorageSync('cityCode') : '510100'
 				console.log(JSON.stringify(e), "ssssssssss");
 				uni.navigateTo({
-					url: "./result?e=" + JSON.stringify(e)
+					// pages/taxes/result 未注册（它的 l-painter、tm-maskFlow 依赖都在 pagesTools 分包，
+					// 主包页面引用分包文件编译不过），所以统一跳分包里那个已注册的结果页
+					url: "/pagesTools/pages/calculator/taxes/result?e=" + JSON.stringify(e)
 				})
 			},
 			tabChange: function(e) {

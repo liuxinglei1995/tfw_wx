@@ -147,6 +147,8 @@
 	import tmPickersCity from '@/pagesUser/tm-vuetify/components/tm-pickersCity/tm-pickersCity.vue';
 	import tmButton from '@/pagesUser/tm-vuetify/components/tm-button/tm-button';
 	import tmPickers from '@/pagesUser/tm-vuetify/components/tm-pickers/tm-pickers';
+	// 需求区域（省市区）选择器。组件在 pagesUser/components 下，easycom 扫不到，必须显式注册
+	import uniDataPicker from '@/pagesUser/components/uni-data-picker/components/uni-data-picker/uni-data-picker.vue';
 
 
 	export default {
@@ -159,7 +161,8 @@
 			tmForm,
 			tmButton,
 			tmPickersCity,
-			tmPickers
+			tmPickers,
+			uniDataPicker
 		},
 		data() {
 			return {

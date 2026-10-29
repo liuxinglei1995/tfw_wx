@@ -36,6 +36,8 @@
 
 <script>
   import dataPicker from "./uni-data-picker.js"
+  // 模板里直接用了 <uni-load-more>，必须在本组件内注册
+  import uniLoadMore from "@/pagesUser/components/uni-load-more/components/uni-load-more/uni-load-more.vue"
 
   /**
    * DataPickerview
@@ -54,6 +56,9 @@
    */
   export default {
     name: 'UniDataPickerView',
+    components: {
+      uniLoadMore
+    },
     emits: ['nodeclick', 'change', 'datachange', 'update:modelValue'],
     mixins: [dataPicker],
     props: {

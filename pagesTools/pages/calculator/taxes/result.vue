@@ -67,9 +67,9 @@
 
 						<l-painter-view v-if="active == 1"
 							css="position:absolute;left: 34rpx;top: 472rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
-							<l-painter-text :text="'个税 ('+s.gs.t+')'" />
+							<l-painter-text :text="'个税 ('+gsT+')'" />
 							<l-painter-text css="position:absolute;right:-0rpx;color:#666666;"
-								:text="numFilter(s.gs.v)+' 元'" />
+								:text="numFilter(gsV)+' 元'" />
 						</l-painter-view>
 						<l-painter-view v-if="active == 1"
 							css="position:absolute;left: 34rpx;top: 532rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
@@ -87,15 +87,15 @@
 							css="position:absolute;left: 34rpx;top: 652rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
 							<l-painter-text css="color:red;fontWeight:bold;" text="总计" />
 							<l-painter-text css="position:absolute;right:-0rpx;color:red;fontWeight:bold;"
-								:text="numFilter(s.buy_zjf.v + s.zydjf + s.qiSui.v + s.gs.v + s.zzs.v)+' 元'" />
+								:text="numFilter(s.buy_zjf.v + s.zydjf + s.qiSui.v + gsV + s.zzs.v)+' 元'" />
 						</l-painter-view>
 
 
 						<l-painter-view v-if="active == 2"
 							css="position:absolute;left: 34rpx;top: 352rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
-							<l-painter-text :text="'个税 ('+s.gs.t+')'" />
+							<l-painter-text :text="'个税 ('+gsT+')'" />
 							<l-painter-text css="position:absolute;right:-0rpx;color:#666666;"
-								:text="numFilter(s.gs.v)+' 元'" />
+								:text="numFilter(gsV)+' 元'" />
 						</l-painter-view>
 						<l-painter-view v-if="active == 2"
 							css="position:absolute;left: 34rpx;top: 412rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
@@ -113,7 +113,7 @@
 							css="position:absolute;left: 34rpx;top: 532rpx;width: 602rpx;fontSize:28rpx;color:#333333;">
 							<l-painter-text css="color:red;fontWeight:bold;" text="总计" />
 							<l-painter-text css="position:absolute;right:-0rpx;color:red;fontWeight:bold;"
-								:text="numFilter(s.gs.v + s.zzs.v + s.sell_zjf.v)+' 元'" />
+								:text="numFilter(gsV + s.zzs.v + s.sell_zjf.v)+' 元'" />
 						</l-painter-view>
 
 
@@ -291,6 +291,24 @@
 				pos: 'center',
 				show_1: false,
 				path: '', //生成的图片地址
+			}
+		},
+		computed: {
+			// 是否"唯一"：满五唯一免征个税
+			isWeiYi() {
+				try {
+					return decodeURIComponent(this.op.shiFouWeiYi || '') === '唯一'
+				} catch (e) {
+					return false
+				}
+			},
+			// 选"唯一"时个税免征：税率显示成 0%、金额按 0 计。
+			// 行本身保留、位置不变，"买房承担所有税费"和"卖方税费"两个页签都用这两个值
+			gsT() {
+				return this.isWeiYi ? '0%' : (this.s.gs ? this.s.gs.t : '')
+			},
+			gsV() {
+				return this.isWeiYi ? 0 : (this.s.gs ? this.s.gs.v : 0)
 			}
 		},
 		onLoad(option) {
