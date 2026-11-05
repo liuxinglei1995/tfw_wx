@@ -1,7 +1,7 @@
 <template>
 	<page-meta :page-style="'overflow:'+(show?'hidden':'visible')"></page-meta>
 	<view>
-		<!-- 时间筛选：本日 / 本周 / 本月 -->
+		<!-- 时间筛选：本日/本周/本月/前3月/前6月/今年/自定义 -->
 		<view class="browse-filter">
 			<picker :range="periodOptions" range-key="label" :value="periodIndex" @change="onPeriodChange">
 				<view class="browse-filter-value">
@@ -10,7 +10,18 @@
 				</view>
 			</picker>
 		</view>
-		<view class="browse-list">
+		<!-- 自定义时间范围 -->
+		<view class="browse-custom" v-if="isCustom">
+			<picker mode="date" :value="customBegin" @change="onCustomBeginChange">
+				<view class="browse-custom-date">{{ customBegin || '开始日期' }}</view>
+			</picker>
+			<text class="browse-custom-sep">至</text>
+			<picker mode="date" :value="customEnd" @change="onCustomEndChange">
+				<view class="browse-custom-date">{{ customEnd || '结束日期' }}</view>
+			</picker>
+		</view>
+		<view class="browse-list"
+			:style="{ height: isCustom ? 'calc(100vh - 276rpx)' : 'calc(100vh - 188rpx)' }">
 			<uni-card v-for="(item, index) in viewList" :key="index">
 				<div class="browse-tags">
 					<div class="browse-tags-left">
@@ -204,10 +215,17 @@
 				// 时间筛选，默认本日
 				periodIndex: 0,
 				periodLabel: '本日',
+				isCustom: false, //是否自定义时间范围
+				customBegin: '',
+				customEnd: '',
 				periodOptions: [
 					{ label: '本日', value: 'day' },
 					{ label: '本周', value: 'week' },
-					{ label: '本月', value: 'month' }
+					{ label: '本月', value: 'month' },
+					{ label: '前3月', value: 'last3' },
+					{ label: '前6月', value: 'last6' },
+					{ label: '今年', value: 'year' },
+					{ label: '自定义', value: 'custom' }
 				],
 				viewList: [],
 				houseViews: [],
@@ -258,17 +276,33 @@
 				this.queryData.pageNum = e.current
 				this.getList();
 			},
-			// 按"本日/本周/本月"算出查询的起止日期（yyyy-MM-dd）
+			// 按快捷选项算出查询的起止日期（yyyy-MM-dd）
 			getPeriodRange(type) {
 				const now = new Date()
 				const pad = (n) => (n < 10 ? '0' + n : '' + n)
 				const fmt = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
 				const start = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+				// 往前推 N 个月；日期超出目标月天数时取该月最后一天，
+				// 避免 5 月 31 日减 3 个月被 JS 滚成 3 月 3 日
+				const shiftMonths = (d, months) => {
+					const target = new Date(d.getFullYear(), d.getMonth() - months, 1)
+					const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate()
+					target.setDate(Math.min(d.getDate(), lastDay))
+					return target
+				}
 				if (type === 'week') {
 					// 周一作为一周的第一天（getDay: 0=周日）
 					const day = start.getDay() === 0 ? 7 : start.getDay()
 					start.setDate(start.getDate() - (day - 1))
 				} else if (type === 'month') {
+					start.setDate(1)
+				} else if (type === 'last3') {
+					start.setTime(shiftMonths(start, 3).getTime())
+				} else if (type === 'last6') {
+					start.setTime(shiftMonths(start, 6).getTime())
+				} else if (type === 'year') {
+					// 今年 1 月 1 日
+					start.setMonth(0)
 					start.setDate(1)
 				}
 				return {
@@ -280,14 +314,53 @@
 			applyPeriod() {
 				const option = this.periodOptions[this.periodIndex]
 				this.periodLabel = option ? option.label : ''
+				this.isCustom = !!(option && option.value === 'custom')
+				if (this.isCustom) {
+					this.applyCustomRange()
+					return
+				}
 				const range = this.getPeriodRange(option ? option.value : 'day')
 				this.queryData.beginTime = range.beginTime
 				this.queryData.endTime = range.endTime
 			},
-			// 切换本日 / 本周 / 本月
+			// 自定义时间范围写入查询参数（开始晚于结束时自动交换）
+			applyCustomRange() {
+				if (!this.customBegin || !this.customEnd) return
+				let begin = this.customBegin
+				let end = this.customEnd
+				if (begin > end) {
+					const tmp = begin
+					begin = end
+					end = tmp
+				}
+				this.queryData.beginTime = begin
+				this.queryData.endTime = end
+			},
+			// 切换时间范围
 			onPeriodChange(e) {
 				this.periodIndex = Number(e.detail.value)
+				const option = this.periodOptions[this.periodIndex]
+				// 首次切到"自定义"时默认填本月
+				if (option && option.value === 'custom' && (!this.customBegin || !this.customEnd)) {
+					const range = this.getPeriodRange('month')
+					this.customBegin = range.beginTime
+					this.customEnd = range.endTime
+				}
 				this.applyPeriod()
+				this.queryData.pageNum = 1
+				this.getList()
+			},
+			// 自定义开始日期
+			onCustomBeginChange(e) {
+				this.customBegin = e.detail.value
+				this.applyCustomRange()
+				this.queryData.pageNum = 1
+				this.getList()
+			},
+			// 自定义结束日期
+			onCustomEndChange(e) {
+				this.customEnd = e.detail.value
+				this.applyCustomRange()
 				this.queryData.pageNum = 1
 				this.getList()
 			},
@@ -458,6 +531,33 @@
 		border-bottom: 1rpx solid #F0F2F5;
 	}
 
+	/* 自定义时间范围：开始日期 至 结束日期 */
+	.browse-custom {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		box-sizing: border-box;
+		height: 88rpx;
+		padding: 0 24rpx;
+		background-color: #FFFFFF;
+		border-bottom: 1rpx solid #F0F2F5;
+	}
+
+	.browse-custom-date {
+		padding: 6rpx 16rpx;
+		border: 1rpx solid #DCDFE6;
+		border-radius: 8rpx;
+		font-size: 24rpx;
+		color: #333333;
+		background-color: #FFFFFF;
+	}
+
+	.browse-custom-sep {
+		margin: 0 12rpx;
+		font-size: 24rpx;
+		color: #999999;
+	}
+
 	.browse-filter-value {
 		padding: 8rpx 24rpx;
 		border-radius: 28rpx;
@@ -472,8 +572,8 @@
 	}
 
 	/* 列表区：占满"视口高度 - 筛选栏 - 底部分页条"，内容在内部滚动 */
+	/* 高度由模板里的内联样式按"是否显示自定义日期行"动态计算 */
 	.browse-list {
-		height: calc(100vh - 188rpx);
 		overflow-y: auto;
 	}
 

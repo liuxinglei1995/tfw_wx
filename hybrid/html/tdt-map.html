@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>天地图</title>
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+
+		#mapDiv {
+			width: 100%;
+			height: 100%;
+		}
+
+		#title {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			padding: 12px 16px;
+			background: rgba(255, 255, 255, .9);
+			font: 14px/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+			color: #333;
+			box-sizing: border-box;
+			display: none;
+		}
+
+		#confirm {
+			position: fixed;
+			left: 50%;
+			bottom: 28px;
+			transform: translateX(-50%);
+			padding: 12px 34px;
+			border-radius: 26px;
+			background: #3C9CFF;
+			color: #fff;
+			font: 16px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+			border: none;
+			box-shadow: 0 4px 14px rgba(60, 156, 255, .4);
+			display: none;
+		}
+
+		#tip {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			color: #999;
+			font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+		}
+	</style>
+	<!-- 天地图 JavaScript API 4.0（免费，需在 https://console.tianditu.gov.cn 申请 tk） -->
+	<script src="https://api.tianditu.gov.cn/api?v=4.0&tk=21c9c2162ccb4f1eee01382ca85832c6"></script>
+</head>
+
+<body>
+	<div id="mapDiv"></div>
+	<div id="tip">地图加载中...</div>
+	<div id="title"></div>
+	<button id="confirm">确认此位置</button>
+
+	<script>
+		function q(name) {
+			var m = new RegExp('[?&]' + name + '=([^&]*)').exec(location.search);
+			return m ? decodeURIComponent(m[1]) : '';
+		}
+
+		// App 端 web-view 的消息通道（uni-app 注入）
+		function post(msg) {
+			try {
+				if (window.uni && typeof uni.postMessage === 'function') {
+					uni.postMessage({ data: msg })
+					return
+				}
+			} catch (e) {}
+			try {
+				if (window.parent) window.parent.postMessage(msg, '*')
+			} catch (e) {}
+		}
+
+		var lng = parseFloat(q('lng')) || 104.0665
+		var lat = parseFloat(q('lat')) || 30.5723
+		var zoom = parseInt(q('zoom'), 10) || 12
+		var pick = q('pick') === '1'
+		var title = q('title')
+		var markers = []
+		try {
+			markers = JSON.parse(q('markers') || '[]') || []
+		} catch (e) {
+			markers = []
+		}
+
+		var tip = document.getElementById('tip')
+		var titleEl = document.getElementById('title')
+		var confirmEl = document.getElementById('confirm')
+
+		if (title) {
+			titleEl.innerText = title
+			titleEl.style.display = 'block'
+		}
+		if (pick) {
+			confirmEl.style.display = 'block'
+		}
+
+		function initMap() {
+			if (typeof T === 'undefined' || !T.Map) {
+				tip.innerText = '天地图加载失败，请检查网络或 tk'
+				return
+			}
+			var map = new T.Map('mapDiv')
+			map.centerAndZoom(new T.LngLat(lng, lat), zoom)
+			map.enableScrollWheelZoom()
+			map.enableDrag()
+
+			// 打点
+			for (var i = 0; i < markers.length; i++) {
+				var m = markers[i]
+				var mlng = m.lng != null ? m.lng : m.longitude
+				var mlat = m.lat != null ? m.lat : m.latitude
+				if (mlng == null || mlat == null) continue
+				var point = new T.LngLat(mlng, mlat)
+				var marker = new T.Marker(point)
+				map.addOverLay(marker)
+				;(function(p, origin) {
+					marker.addEventListener('click', function() {
+						post({
+							type: 'marker',
+							lng: p.getLng(),
+							lat: p.getLat(),
+							title: origin.title || ''
+						})
+					})
+				})(point, m)
+			}
+
+			tip.style.display = 'none'
+
+			// 选点模式：点在哪儿取哪儿
+			if (pick) {
+				map.addEventListener('click', function(e) {
+					var p = e.lnglat
+					post({
+						type: 'pick',
+						lng: p.getLng(),
+						lat: p.getLat()
+					})
+				})
+				confirmEl.onclick = function() {
+					var c = map.getCenter()
+					post({
+						type: 'pick',
+						lng: c.getLng(),
+						lat: c.getLat()
+					})
+					navigateBack()
+				}
+			} else {
+				// 预览模式：点地图任意位置也可把坐标回传（页面按需处理）
+				map.addEventListener('click', function(e) {
+					post({
+						type: 'click',
+						lng: e.lnglat.getLng(),
+						lat: e.lnglat.getLat()
+					})
+				})
+			}
+		}
+
+		function navigateBack() {
+			try {
+				if (window.uni && typeof uni.navigateBack === 'function') {
+					uni.navigateBack({ delta: 1 })
+				}
+			} catch (e) {}
+		}
+
+		if (document.readyState === 'complete') {
+			initMap()
+		} else {
+			window.addEventListener('load', initMap)
+		}
+	</script>
+</body>
+
+</html>

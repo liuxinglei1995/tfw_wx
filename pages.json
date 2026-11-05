@@ -63,6 +63,12 @@
 	"subPackages": [{
 			"root": "pagesHouse",
 			"pages": [{
+					// 天地图全屏页（APP 端用 web-view 加载天地图，不依赖原生地图模块）
+					"path": "tdtMap/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				}, {
 					"path": "chat/chat",
 					"style": {
 						"navigationBarTitleText": "在线咨询",

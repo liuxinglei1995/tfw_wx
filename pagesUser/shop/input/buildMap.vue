@@ -1,6 +1,13 @@
 <template>
 	<view>
 		<view style="height: 100%;">
+			<!-- APP 端不依赖原生地图模块，用天地图选点 -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="tdt-enter" style="width:100%;height:100vh;" @tap="openTdtPick">
+				<text class="tdt-enter-tip">点击选择位置</text>
+			</view>
+			<!-- #endif -->
+			<!-- #ifndef APP-PLUS -->
 			<map id="maps" class="tui-maps" ref="maps" :longitude="longitude" :latitude="latitude" :scale="16" show-location @regionchange="regionchange" :style="{'width':windowWidth+'px','height':windowHeight+'rpx'}">
 				<cover-view class="left-confirm" @click="next">
 					<view>确认</view>
@@ -9,6 +16,7 @@
 					<view>×</view>
 				</cover-view>
 			</map>
+			<!-- #endif -->
 			<cover-view v-if="popupShow == true">
 				<view class="gps-body">
 					<view class="search my-20 flex-between">
@@ -44,7 +52,10 @@
 	let qqmapsdk = new QQMapWS.default({
 		key: 'XJTBZ-XW5K4-5KBU6-D37VL-LAHGF-RSBBI'
 	});
+	// #ifndef APP-PLUS
 	let mapContext = uni.createMapContext("maps", this)
+	// #endif
+	import { openTdtMap, onTdtMapPick } from '@/utils/tdtMap.js';
 	export default {
 		data() {
 			return {
@@ -87,6 +98,43 @@
 			}
 		},
 		methods: {
+			// APP 端改用天地图选点
+			openTdtPick() {
+				const stop = onTdtMapPick((data) => {
+					stop()
+					this.longitude = data.lng
+					this.latitude = data.lat
+					this.getTdtAddress(data.lat, data.lng).then(name => {
+						this.address = {
+							title: name || '已选位置',
+							latitude: data.lat,
+							longitude: data.lng
+						}
+						this.next()
+					})
+				})
+				openTdtMap({
+					lng: this.longitude || 104.0665,
+					lat: this.latitude || 30.5723,
+					zoom: 16,
+					pick: true
+				})
+			},
+			// 用天地图逆地理编码取地址名
+			getTdtAddress(lat, lng) {
+				return new Promise((resolve) => {
+					uni.request({
+						url: 'https://api.tianditu.gov.cn/geocoder?postStr=' + encodeURIComponent('{"lon":' + lng +
+								',"lat":' + lat + ',"ver":1}') +
+							'&type=geocode&tk=21c9c2162ccb4f1eee01382ca85832c6',
+						success: (res) => {
+							const r = res.data && res.data.result
+							resolve((r && r.formatted_address) ? r.formatted_address : '')
+						},
+						fail: () => resolve('')
+					})
+				})
+			},
 			//每移动一次获取周围地址
 			regionchange(e) {
 				console.log(e)

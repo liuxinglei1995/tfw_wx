@@ -2,9 +2,17 @@
 	<view class="">
 		<tm-menubars title="周边" iconColor="white" :transparent="true"></tm-menubars>
 		<tm-sheet id="map" :margin="[0,0]" :padding="[0,0]">
+			<!-- APP 端不依赖原生地图模块，点开全屏天地图 -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="tdt-enter" style="width:100%;height:65vh;" @tap="openFullMap">
+				<text class="tdt-enter-tip">点击查看地图</text>
+			</view>
+			<!-- #endif -->
+			<!-- #ifndef APP-PLUS -->
 			<map id="myMap" style="width:100%;height:65vh;" :markers="markers" :latitude="latitude"
 				:longitude="longitude" :scale='scale'>
 			</map>
+			<!-- #endif -->
 			<view class="flex-around" style="font-size: 20rpx;color: #757575;">
 				<view v-for="(item,index) in iconMeun" @tap="toMap" :data-img="item.img" :data-name="item.name"
 					:data-keyword="item.keyword" style="text-align: center;padding: 10rpx;"
@@ -42,6 +50,7 @@
 		getlpxq
 	} from '@/api/houst.js';
 	import tmSheet from '@/tm-vuetify/components/tm-sheet/tm-sheet.vue';
+	import { openTdtMap } from '@/utils/tdtMap.js';
 	var app = getApp();
 	var utils = require("../../utils/util.js")
 	let QQMapWS = require("../../js_sdk/skyrrrt-ws-jssdk/qqmap-ws-jssdk.js"); // 实例化API核心类
@@ -165,8 +174,17 @@
 
 		},
 		methods: {
+			// APP 端打开全屏天地图
+			openFullMap() {
+				openTdtMap({
+					lng: this.longitude,
+					lat: this.latitude,
+					zoom: this.scale,
+					markers: this.markers
+				})
+			},
 			/**
-			 * 附近位置最大最小经纬度计算 
+			 * 附近位置最大最小经纬度计算
 			 * @param   longitude  经度
 			 * @param   latitude   纬度
 			 * @param   distince    距离（千米）

@@ -2,8 +2,16 @@
 	<view>
 		<tm-menubars title="指导价" iconColor="white" :transparent="true"></tm-menubars>
 		<view style="height: 100%;">
+			<!-- APP 端不依赖原生地图模块 -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="tdt-enter" style="width:100%;height:100vh;" @tap="openFullMap">
+				<text class="tdt-enter-tip">点击查看地图</text>
+			</view>
+			<!-- #endif -->
+			<!-- #ifndef APP-PLUS -->
 			<map id="maps" class="tui-maps" ref="maps" :longitude="longitude" :markers="markers" :latitude="latitude" :scale="16" show-location  @regionchange="regionchange" :style="{'width':windowWidth+'px','height':windowHeight+'rpx'}">
 			</map>
+			<!-- #endif -->
 			<view class="gps-body" v-if="poiss.length != []">
 				<scroll-view scroll-y="true" :scroll-top="scrollTop" scroll-with-animation="true" style="height:500rpx;">
 					<block v-for="(item,index) in poiss">
@@ -28,6 +36,7 @@
 
 <script>
 	import tmEmpty from '@/pagesTools/tm-vuetify/components/tm-empty/tm-empty.vue'
+	import { openTdtMap } from '@/utils/tdtMap.js';
 	let QQMapWS = require("../../../js_sdk/skyrrrt-ws-jssdk/qqmap-ws-jssdk.js"); // 实例化API核心类
 	// 实例化API核心类
 	
@@ -52,7 +61,9 @@
 		},
 		//第一次初始化用户位置信息
 		onLoad() {
+			// #ifndef APP-PLUS
 			mapContext = uni.createMapContext("maps", this)
+			// #endif
 			try {
 				var th_is = this;
 				const res = uni.getSystemInfoSync();
@@ -78,6 +89,15 @@
 			}
 		},
 		methods: {
+			// APP 端打开全屏天地图
+			openFullMap() {
+				openTdtMap({
+					lng: this.longitude || 104.0665,
+					lat: this.latitude || 30.5723,
+					zoom: 16,
+					markers: this.markers
+				})
+			},
 			//每移动一次获取周围地址
 			regionchange(e) {
 				var th_is = this;

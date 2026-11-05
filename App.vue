@@ -110,6 +110,23 @@
 		line-height: inherit;
 	}
 
+	/* APP 端地图占位入口：点击进入全屏天地图页 */
+	.tdt-enter {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #EAF3FF;
+		background-image: linear-gradient(180deg, #EAF3FF 0%, #F7F9FC 100%);
+	}
+
+	.tdt-enter-tip {
+		padding: 14rpx 36rpx;
+		border-radius: 32rpx;
+		background-color: #3C9CFF;
+		color: #FFFFFF;
+		font-size: 28rpx;
+	}
+
 	.pt5 {
 		padding-top: 10rpx;
 	}

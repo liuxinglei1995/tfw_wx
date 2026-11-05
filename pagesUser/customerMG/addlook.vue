@@ -8,7 +8,15 @@
 					<uni-easyinput v-model="valiFormData.title" placeholder="请输入标题" />
 				</uni-forms-item>
 				<uni-forms-item label="到访时间" required name="customerReportingTime">
-					<uni-datetime-picker type="datetime" v-model="valiFormData.customerReportingTime" />
+					<!-- 用原生 date + time 选择器，避免引入 217KB 的 uni-datetime-picker -->
+					<view class="visit-datetime">
+						<picker mode="date" :value="visitDate" @change="onVisitDateChange">
+							<view class="visit-datetime-value">{{ visitDate || '选择日期' }}</view>
+						</picker>
+						<picker mode="time" :value="visitTime" @change="onVisitTimeChange">
+							<view class="visit-datetime-value">{{ visitTime || '选择时间' }}</view>
+						</picker>
+					</view>
 				</uni-forms-item>
 				<uni-forms-item label="到访人数" required name="customerReportingTime">
 					<u-number-box v-model="valiFormData.userNum" :min="1" :max="10"></u-number-box>
@@ -88,8 +96,6 @@
 	import uniSearchBar from '@/pagesUser/components/uni-search-bar/components/uni-search-bar/uni-search-bar.vue';
 	import uniDataSelect from '@/pagesUser/components/uni-data-select/components/uni-data-select/uni-data-select.vue';
 	import uniEasyinput from "@/pagesUser/components/uni-easyinput/components/uni-easyinput/uni-easyinput.vue";
-	import uniDatetimePicker
-	from "@/pagesUser/components/uni-datetime-picker/components/uni-datetime-picker/uni-datetime-picker.vue";
 	import {
 		getDicts
 	} from "@/api/system/dict/data";
@@ -101,13 +107,14 @@
 			uniFormsItem,
 			uniSearchBar,
 			uniDataSelect,
-			uniEasyinput,
-			uniDatetimePicker
+			uniEasyinput
 		},
 		data() {
 			return {
 				andusers: [],
 				anduserdata: [],
+				visitDate: '',
+				visitTime: '',
 				searchtext: null,
 				nickName: null,
 				fuzzyqueriesbysearchValuedata: [],
@@ -148,6 +155,12 @@
 
 		},
 		onLoad(option) {
+			// 到访时间默认取当前日期时间
+			const now = new Date()
+			const pad = (n) => (n < 10 ? '0' + n : '' + n)
+			this.visitDate = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+			this.visitTime = pad(now.getHours()) + ':' + pad(now.getMinutes())
+			this.syncVisitTime()
 			if (option.id == '' || option.id == null) {} else {
 				this.valiFormData.customerId = option.id
 				this.valiFormData.title = this.$store.state.user.userdata.nickName + " " + new Date().toLocaleString() +
@@ -162,6 +175,21 @@
 			this.$refs.customForm.setRules(this.customRules)
 		},
 		methods: {
+			// 选择到访日期
+			onVisitDateChange(e) {
+				this.visitDate = e.detail.value
+				this.syncVisitTime()
+			},
+			// 选择到访时间
+			onVisitTimeChange(e) {
+				this.visitTime = e.detail.value
+				this.syncVisitTime()
+			},
+			// 组合成 yyyy-MM-dd HH:mm:ss 写入表单字段
+			syncVisitTime() {
+				this.valiFormData.customerReportingTime = (this.visitDate && this.visitTime) ?
+					this.visitDate + ' ' + this.visitTime + ':00' : ''
+			},
 			housesInput(e) {
 				this.valiFormData.houseId = e
 			},
@@ -335,5 +363,31 @@
 		align-items: center;
 		height: 35px;
 		margin-left: 10px;
+	}
+
+	/* 到访时间：日期 + 时间两个原生选择器 */
+	.visit-datetime {
+		display: flex;
+		align-items: center;
+		flex: 1;
+	}
+
+	.visit-datetime picker {
+		flex: 1;
+	}
+
+	.visit-datetime picker:first-child {
+		margin-right: 10px;
+	}
+
+	.visit-datetime-value {
+		height: 35px;
+		line-height: 35px;
+		padding: 0 10px;
+		border: 1px solid #e5e5e5;
+		border-radius: 5px;
+		font-size: 14px;
+		color: #333333;
+		background-color: #fff;
 	}
 </style>

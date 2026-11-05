@@ -19,8 +19,16 @@
 					<view class="address" @click="GetChooseLocation">{{ ClockInObj.street }}</view>
 					<view class="address">{{ ClockInObj.Details }}</view>
 				</view>
+				<!-- APP 端不依赖原生地图模块 -->
+				<!-- #ifdef APP-PLUS -->
+				<view class="tdt-enter" style="width:100%;height:360rpx;" v-if="mapflag">
+					<text class="tdt-enter-tip">APP 端签到不显示地图</text>
+				</view>
+				<!-- #endif -->
+				<!-- #ifndef APP-PLUS -->
 				<map :latitude="lat_current" :longitude="lng_current" :markers="covers" scale="16" :circles="circles"
 					v-if="mapflag"></map>
+				<!-- #endif -->
 				<!-- 打卡按钮 -->
 				<view class="item_Button" :class="[showstatus=='签到' ? 'item_Button_Click' : '']">
 					<view class="ring" @click="Submit">
